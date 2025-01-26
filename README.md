@@ -1,5 +1,2 @@
 # BackendWEB
-
-testing submodules
-
-new Test
+PULLATE SEMPRE COSì RIDUCIAMO AL MINIMO LA POSSIBILITà DI CONFLITTI

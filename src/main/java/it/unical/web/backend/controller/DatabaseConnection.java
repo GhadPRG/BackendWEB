@@ -4,19 +4,15 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class DatabaseConnection {
+//La classe DatabaseConnection è una classe utility, quindi non va istanziata, basta chiamare solo i metodi direttamente
+//ad esempio, DatabaseConnection.getConnection();
+
+public final class DatabaseConnection {
     private static final String URL = "jdbc:postgresql://localhost:5432/welliodb";
     private static final String USER = "postgres";
     private static final String PASSWORD = "password";
-    private static DatabaseConnection instance;
-    public DatabaseConnection() {}
 
-    public static DatabaseConnection getInstance() {
-        if (instance == null) {
-            instance = new DatabaseConnection();
-        }
-        return instance;
-    }
+    private DatabaseConnection(){}
 
     public static Connection getConnection(){
 

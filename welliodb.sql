@@ -14,7 +14,7 @@ CREATE TABLE "UserInfo" (
     height DECIMAL(8, 2),
     weight DECIMAL(8, 2),
     daily_kcalories INT,
-    CONSTRAINT userinfo_user_id_fkey FOREIGN KEY (user_id) REFERENCES "User"(id)
+    CONSTRAINT userinfo_user_id_fkey FOREIGN KEY (user_id) REFERENCES "User"(id) ON DELETE CASCADE
 );
 
 CREATE TABLE "Meal" (
@@ -23,7 +23,7 @@ CREATE TABLE "Meal" (
     date TIMESTAMP,
     type VARCHAR(255),
     description VARCHAR(255) NOT NULL,
-    CONSTRAINT meal_user_id_fkey FOREIGN KEY (user_id) REFERENCES "User"(id)
+    CONSTRAINT meal_user_id_fkey FOREIGN KEY (user_id) REFERENCES "User"(id) ON DELETE CASCADE
 );
 
 CREATE TABLE "Dish" (
@@ -52,7 +52,7 @@ CREATE TABLE "Exercise" (
     reps INT,
     weight_used INT,
     time_passed INT,
-    CONSTRAINT exercise_user_id_fkey FOREIGN KEY (user_id) REFERENCES "User"(id)
+    CONSTRAINT exercise_user_id_fkey FOREIGN KEY (user_id) REFERENCES "User"(id) ON DELETE CASCADE
 );
 
 CREATE TABLE "ExerciseInfo" (
@@ -83,7 +83,7 @@ CREATE TABLE "Note" (
     categoryTag_id BIGINT NOT NULL,
     title VARCHAR(255),
     description TEXT,
-    CONSTRAINT note_user_id_fkey FOREIGN KEY (user_id) REFERENCES "User"(id),
+    CONSTRAINT note_user_id_fkey FOREIGN KEY (user_id) REFERENCES "User"(id) ON DELETE CASCADE,
     CONSTRAINT note_categorytag_id_fkey FOREIGN KEY (categoryTag_id) REFERENCES "CategoryTag"(id)
 );
 
@@ -94,7 +94,7 @@ CREATE TABLE "DailyMood" (
     date TIMESTAMP NOT NULL,
     description VARCHAR(255) NOT NULL,
     CONSTRAINT dailymood_categorytag_id_fkey FOREIGN KEY (categoryTag_id) REFERENCES "CategoryTag"(id),
-    CONSTRAINT dailymood_user_id_fkey FOREIGN KEY (user_id) REFERENCES "User"(id)
+    CONSTRAINT dailymood_user_id_fkey FOREIGN KEY (user_id) REFERENCES "User"(id) ON DELETE CASCADE
 );
 
 CREATE TABLE "DailyNote" (
@@ -103,5 +103,5 @@ CREATE TABLE "DailyNote" (
     date TIMESTAMP NOT NULL,
     title VARCHAR(255),
     description TEXT,
-    CONSTRAINT dailynote_user_id_fkey FOREIGN KEY (user_id) REFERENCES "User"(id)
+    CONSTRAINT dailynote_user_id_fkey FOREIGN KEY (user_id) REFERENCES "User"(id) ON DELETE CASCADE
 );

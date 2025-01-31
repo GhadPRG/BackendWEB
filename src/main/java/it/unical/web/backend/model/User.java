@@ -1,22 +1,23 @@
-package it.unical.web.backend.Persistence.Model;
+package it.unical.web.backend.model;
 
 import lombok.*;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode
 public class User {
     private long id;
     private String username;
+    private String password;
     private String firstName;
     private String lastName;
-    private String password;
     private String email;
-    private Date birthDate;
+    private LocalDate birthDate;
     private String gender;
     private float height;
     private float weight;

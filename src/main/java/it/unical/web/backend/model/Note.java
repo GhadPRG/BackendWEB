@@ -1,4 +1,4 @@
-package it.unical.web.backend.Persistence.Model;
+package it.unical.web.backend.model;
 import lombok.*;
 
 @Getter
@@ -6,9 +6,10 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @EqualsAndHashCode
-public class Category {
+public class Note {
     private long id;
-    private String name;
-    private String tag;
+    private User user;
+    private Category category;
+    private String title;
     private String description;
 }

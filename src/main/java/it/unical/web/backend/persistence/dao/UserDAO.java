@@ -1,7 +1,7 @@
-package it.unical.web.backend.dao;
+package it.unical.web.backend.persistence.dao;
 
 import it.unical.web.backend.controller.DatabaseConnection;
-import it.unical.web.backend.model.User;
+import it.unical.web.backend.persistence.model.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

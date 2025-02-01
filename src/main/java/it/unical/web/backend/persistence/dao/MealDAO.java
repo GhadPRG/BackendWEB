@@ -1,9 +1,9 @@
-package it.unical.web.backend.dao;
+package it.unical.web.backend.persistence.dao;
 
 import it.unical.web.backend.controller.DatabaseConnection;
-import it.unical.web.backend.model.Dish;
-import it.unical.web.backend.model.DishInfo;
-import it.unical.web.backend.model.Meal;
+import it.unical.web.backend.persistence.model.Dish;
+import it.unical.web.backend.persistence.model.DishInfo;
+import it.unical.web.backend.persistence.model.Meal;
 
 import java.sql.*;
 import java.time.LocalDate;

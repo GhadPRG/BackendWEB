@@ -1,7 +1,6 @@
 package it.unical.web.backend.persistence.model;
 
 import lombok.*;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 

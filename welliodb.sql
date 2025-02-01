@@ -17,31 +17,34 @@ CREATE TABLE "UserInfo" (
     CONSTRAINT userinfo_user_id_fkey FOREIGN KEY (user_id) REFERENCES "User"(id) ON DELETE CASCADE
 );
 
-CREATE TABLE "Meal" (
-    id SERIAL PRIMARY KEY,
-    user_id INT,
-    date TIMESTAMP,
-    type VARCHAR(255),
-    description VARCHAR(255) NOT NULL,
-    CONSTRAINT meal_user_id_fkey FOREIGN KEY (user_id) REFERENCES "User"(id) ON DELETE CASCADE
+CREATE TABLE dish_info (
+                           id SERIAL PRIMARY KEY,
+                           nome VARCHAR(255),
+                           kcalories INT,
+                           carbs INT,
+                           proteins INT,
+                           fats INT,
+                           fibers INT,
+                           user_id INT NOT NULL,
+                           FOREIGN KEY (user_id) REFERENCES "User"(id) ON DELETE CASCADE
 );
 
-CREATE TABLE "Dish" (
-    id SERIAL PRIMARY KEY,
-    meal_id INT,
-    quantity INT,
-    CONSTRAINT dish_meal_id_fkey FOREIGN KEY (meal_id) REFERENCES "Meal"(id)
+CREATE TABLE meals (
+                       id SERIAL PRIMARY KEY,
+                       user_id INT NOT NULL,
+                       meal_type VARCHAR(50),
+                       meal_date DATE NOT NULL,
+                       FOREIGN KEY (user_id) REFERENCES "User"(id) ON DELETE CASCADE,
+                       UNIQUE (user_id, meal_type, meal_date)
 );
 
-CREATE TABLE "DishInfo" (
-    id SERIAL PRIMARY KEY,
-    dish_id BIGINT,
-    kcalories INT,
-    carbs INT,
-    proteins INT,
-    fats INT,
-    fibers INT,
-    CONSTRAINT dishinfo_dish_id_fkey FOREIGN KEY (dish_id) REFERENCES "Dish"(id)
+CREATE TABLE dishes (
+                        id SERIAL PRIMARY KEY,
+                        meal_id INT NOT NULL,
+                        dish_info_id INT NOT NULL,
+                        quantity INT DEFAULT 1,
+                        FOREIGN KEY (meal_id) REFERENCES meals(id) ON DELETE CASCADE,
+                        FOREIGN KEY (dish_info_id) REFERENCES dish_info(id) ON DELETE CASCADE
 );
 
 CREATE TABLE "Exercise" (
@@ -105,3 +108,5 @@ CREATE TABLE "DailyNote" (
     description TEXT,
     CONSTRAINT dailynote_user_id_fkey FOREIGN KEY (user_id) REFERENCES "User"(id) ON DELETE CASCADE
 );
+
+

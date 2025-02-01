@@ -1,4 +1,4 @@
-package it.unical.web.backend.model;
+package it.unical.web.backend.persistence.model;
 import lombok.*;
 import java.util.Date;
 

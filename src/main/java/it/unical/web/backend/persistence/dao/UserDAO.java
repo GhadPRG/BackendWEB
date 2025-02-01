@@ -1,7 +1,7 @@
-package it.unical.web.backend.dao;
+package it.unical.web.backend.persistence.dao;
 
 import it.unical.web.backend.controller.DatabaseConnection;
-import it.unical.web.backend.model.User;
+import it.unical.web.backend.persistence.model.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -225,6 +225,18 @@ public class UserDAO implements DAO<User> {
             int rowsUpdated = statement.executeUpdate();
             System.out.println("Righe eliminate: " + rowsUpdated);
         } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean isEmailUnique(String email) {
+        String query = "SELECT email FROM \"UserInfo\" WHERE email = ?;";
+        try(Connection dbConnection = DatabaseConnection.getConnection(); PreparedStatement statement = dbConnection.prepareStatement(query)) {
+            statement.setString(1, email);
+            ResultSet rs = statement.executeQuery();
+            return !rs.next();
+        }catch (SQLException e){
+            System.out.println("Eccezione in isEmailUnique(UserDAO)");
             throw new RuntimeException(e);
         }
     }

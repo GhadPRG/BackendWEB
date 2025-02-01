@@ -1,4 +1,4 @@
-package it.unical.web.backend.dao;
+package it.unical.web.backend.persistence.dao;
 
 import java.util.List;
 

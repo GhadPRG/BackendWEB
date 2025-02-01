@@ -4,7 +4,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.Value;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import static io.jsonwebtoken.SignatureAlgorithm.HS256;
 import java.security.Key;
@@ -14,11 +14,8 @@ import java.util.Date;
 @Service
 public class JWTService {
 
-    private final String SECRET_KEY;
-
-    public JWTService(@Value(staticConstructor = "${jwt.secret}") String SECRET_KEY) {
-        this.SECRET_KEY = SECRET_KEY;
-    }
+    @Value("{jwt.secret}")
+    private String SECRET_KEY;
 
     private Key getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);

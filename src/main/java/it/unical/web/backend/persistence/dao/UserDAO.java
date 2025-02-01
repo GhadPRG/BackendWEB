@@ -40,9 +40,8 @@ public class UserDAO implements DAO<User> {
                 users.add(user);
             }
         } catch (SQLException e) {
+            System.out.println("Eccezione in getAll (UserDAO)"+e.getMessage());
 
-            System.out.println("Eccezione in getAll (UserDAO)");
-            throw new RuntimeException(e);
         }
         System.out.println("Trovati: "+users.size()+" utenti");
         return users;
@@ -60,8 +59,7 @@ public class UserDAO implements DAO<User> {
                 user = mapResultToUser(resultSet);
             }
         }catch (SQLException e){
-            System.out.println("Eccezione in getById(UserDAO)");
-            throw new RuntimeException(e);
+            System.out.println("Eccezione in getById(UserDAO)"+e.getMessage());
         }
         return user;
     }
@@ -116,7 +114,7 @@ public class UserDAO implements DAO<User> {
             statement.setInt(10, entity.getDailyCalories());
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println("Eccezione in add(UserDAO)"+e.getMessage());
         }
 
 
@@ -229,8 +227,8 @@ public class UserDAO implements DAO<User> {
             System.out.println("Righe aggiornate: " + rowsUpdated);
 
         } catch (SQLException e) {
-            System.out.println("Eccezione in update (UserDAO)");
-            throw new RuntimeException(e);
+            System.out.println("Eccezione in update(UserDAO)"+e.getMessage());
+
         }
     }
 
@@ -243,7 +241,8 @@ public class UserDAO implements DAO<User> {
             int rowsUpdated = statement.executeUpdate();
             System.out.println("Righe eliminate: " + rowsUpdated);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println("Eccezione in delete(UserDAO)"+e.getMessage());
+
         }
     }
 

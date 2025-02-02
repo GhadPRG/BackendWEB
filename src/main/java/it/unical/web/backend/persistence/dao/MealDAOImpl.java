@@ -1,6 +1,8 @@
 package it.unical.web.backend.persistence.dao;
 
+
 import it.unical.web.backend.controller.DatabaseConnection;
+import it.unical.web.backend.persistence.dao.DAOInterface.MealDAO;
 import it.unical.web.backend.persistence.model.Dish;
 import it.unical.web.backend.persistence.model.DishInfo;
 import it.unical.web.backend.persistence.model.Meal;
@@ -10,7 +12,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MealDAO implements DAO<Meal> {
+public class MealDAOImpl implements MealDAO {
 
     private Meal mapToMeal(ResultSet rs) throws SQLException {
         return new Meal(
@@ -63,14 +65,8 @@ public class MealDAO implements DAO<Meal> {
         System.out.println("Trovati "+meals.size()+" Piatti");
         return meals;
     }
-
-    @Override
-    public Meal getById(int mealId) {
-        return null;
-    }
-
-
     //Ottiengo dishinfo già registrati
+    @Override
     public List<DishInfo> getDishInfoByUserID(long id) {
         String query="SELECT * FROM \"dish_info\" WHERE user_id=?";
         List<DishInfo> dishInfos =new ArrayList<>();
@@ -93,6 +89,7 @@ public class MealDAO implements DAO<Meal> {
         }
     }
 
+    @Override
     public List<Meal> getDishByDayTypeAndUserId(LocalDate date, String type, long id) {
         String query = """
             SELECT
@@ -149,6 +146,7 @@ public class MealDAO implements DAO<Meal> {
         }
     }
 
+    @Override
     public void insertDishesForMeal(LocalDate date, String mealType, long userId, List<Dish> dishes) {
         // Query per verificare se il pasto esiste già
         String checkMealQuery = """
@@ -222,12 +220,7 @@ public class MealDAO implements DAO<Meal> {
         }
     }
 
-
     @Override
-    public void add(Meal entity) {
-
-    }
-
     public void insertDishInfo(DishInfo dishInfo) {
         String query = """
             INSERT INTO dish_info (nome, kcalories, carbs, proteins, fats, fibers, user_id)
@@ -256,6 +249,7 @@ public class MealDAO implements DAO<Meal> {
         }
     }
 
+    @Override
     public void updateDish(long dishId, Integer newQuantity, Long newDishInfoId) {
         String query = """
             UPDATE dishes
@@ -295,36 +289,37 @@ public class MealDAO implements DAO<Meal> {
         }
     }
 
-    public void updateDishInfo(long dishInfoId, String nome, Integer kcalories, Integer carbs, Integer proteins, Integer fats, Integer fibers) {
+    @Override
+    public void updateDishInfo(DishInfo dishInfo) {
         // Lista per memorizzare i campi da aggiornare
         List<String> updates = new ArrayList<>();
         // Lista per memorizzare i valori dei parametri
         List<Object> params = new ArrayList<>();
 
         // Aggiungi i campi da aggiornare alla lista
-        if (nome != null) {
+        if (dishInfo.getNome() != null) {
             updates.add("nome = ?");
-            params.add(nome);
+            params.add(dishInfo.getNome());
         }
-        if (kcalories != null) {
+        if (dishInfo.getKcal() != -1) {
             updates.add("kcalories = ?");
-            params.add(kcalories);
+            params.add(dishInfo.getKcal());
         }
-        if (carbs != null) {
+        if (dishInfo.getCarbs() != -1) {
             updates.add("carbs = ?");
-            params.add(carbs);
+            params.add(dishInfo.getCarbs());
         }
-        if (proteins != null) {
+        if (dishInfo.getProteins() != -1) {
             updates.add("proteins = ?");
-            params.add(proteins);
+            params.add(dishInfo.getProteins());
         }
-        if (fats != null) {
+        if (dishInfo.getFats() != -1) {
             updates.add("fats = ?");
-            params.add(fats);
+            params.add(dishInfo.getFats());
         }
-        if (fibers != null) {
+        if (dishInfo.getFibers() != -1) {
             updates.add("fibers = ?");
-            params.add(fibers);
+            params.add(dishInfo.getFibers());
         }
 
         // Se non ci sono campi da aggiornare, esci dal metodo
@@ -350,7 +345,7 @@ public class MealDAO implements DAO<Meal> {
             }
 
             // Imposta l'ID del piatto come ultimo parametro
-            statement.setLong(paramIndex, dishInfoId);
+            statement.setLong(paramIndex, dishInfo.getId());
 
             // Esegui l'aggiornamento
             int affectedRows = statement.executeUpdate();
@@ -365,10 +360,6 @@ public class MealDAO implements DAO<Meal> {
         }
     }
 
-    @Override
-    public void update(Meal entity) {
-
-    }
 
     @Override
     public void delete(int id) {

@@ -1,6 +1,7 @@
 package it.unical.web.backend.persistence.dao;
 
 import it.unical.web.backend.controller.DatabaseConnection;
+import it.unical.web.backend.persistence.dao.DAOInterface.UserDAO;
 import it.unical.web.backend.persistence.model.User;
 
 import java.sql.Connection;
@@ -10,7 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDAO implements DAO<User> {
+public class UserDAOImpl implements UserDAO {
 
     private User mapResultToUser(ResultSet rs) throws SQLException {
         return new User(

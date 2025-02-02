@@ -47,24 +47,34 @@ CREATE TABLE dishes (
                         FOREIGN KEY (dish_info_id) REFERENCES dish_info(id) ON DELETE CASCADE
 );
 
-CREATE TABLE "Exercise" (
+-- Tabella Esercizi
+CREATE TABLE exercises (
     id SERIAL PRIMARY KEY,
-    user_id INT,
-    date TIMESTAMP,
-    sets INT,
-    reps INT,
-    weight_used INT,
-    time_passed INT,
-    CONSTRAINT exercise_user_id_fkey FOREIGN KEY (user_id) REFERENCES "User"(id) ON DELETE CASCADE
+    name VARCHAR(100) NOT NULL,
+    notes TEXT,
+    -- Molto figa sta cosa che ti verifica automaticamente se l'elemento che vuoi inserire è uguale a uno di quelli. FIGO
+    muscle_group VARCHAR(50) NOT NULL CHECK (muscle_group IN ('Back', 'Chest', 'Legs', 'Core', 'Arms', 'Shoulders')),
+    reps INTEGER NOT NULL,
+    sets INTEGER NOT NULL,
+    kcal_per_rep DECIMAL(5, 2) NOT NULL,
+    weight DECIMAL(5, 2),
+    created_by INTEGER NOT NULL REFERENCES "User"(id) ON DELETE CASCADE
 );
 
-CREATE TABLE "ExerciseInfo" (
+-- Tabella Schede di Esercizi
+CREATE TABLE workout_plans (
     id SERIAL PRIMARY KEY,
-    exercise_id BIGINT NOT NULL,
-    name VARCHAR(255),
-    target_muscle_group VARCHAR(255),
-    kcalories_burn_per_rep INT,
-    CONSTRAINT exerciseinfo_exercise_id_fkey FOREIGN KEY (exercise_id) REFERENCES "Exercise"(id)
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    created_by INTEGER NOT NULL REFERENCES "User"(id) ON DELETE CASCADE
+);
+
+-- Tabella Relazione Scheda-Esercizi
+CREATE TABLE workout_plan_exercises (
+    id SERIAL PRIMARY KEY,
+    workout_plan_id INTEGER NOT NULL REFERENCES workout_plans(id) ON DELETE CASCADE,
+    exercise_id INTEGER NOT NULL REFERENCES exercises(id) ON DELETE CASCADE,
+    UNIQUE (workout_plan_id, exercise_id)
 );
 
 CREATE TABLE "CategoryGroup" (

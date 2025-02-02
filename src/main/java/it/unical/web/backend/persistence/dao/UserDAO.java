@@ -66,6 +66,24 @@ public class UserDAO implements DAO<User> {
         return user;
     }
 
+    public User getByUsername(String username) {
+        String query = "SELECT * FROM \"User\" WHERE u.username = ?";
+        User user = null;
+        try(Connection dbConnection = DatabaseConnection.getConnection();
+            PreparedStatement statement = dbConnection.prepareStatement(query);){
+            statement.setString(1, username);
+
+            ResultSet rs = statement.executeQuery();
+            if(rs.next()) {
+                user = mapResultToUser(rs);
+            }
+        }catch (SQLException e){
+            System.out.println("Eccezione in getByUsername(UserDAO)");
+            throw new RuntimeException(e);
+        }
+        return user;
+    }
+
     //Visto che l'iscrizione
     @Override
     public void add(User entity) {

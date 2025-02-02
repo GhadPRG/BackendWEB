@@ -3,13 +3,17 @@ package it.unical.web.backend.service;
 import it.unical.web.backend.config.security.SecurityConfig;
 import it.unical.web.backend.controller.DatabaseConnection;
 import it.unical.web.backend.persistence.RegexHandler;
-import it.unical.web.backend.persistence.ValidationResult;
 import it.unical.web.backend.persistence.dao.UserDAO;
 import it.unical.web.backend.persistence.model.User;
+import it.unical.web.backend.service.Request.AuthenticationRequest;
 import it.unical.web.backend.service.Request.RegistrationRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 
+import javax.xml.crypto.Data;
+import java.time.LocalDate;
 
 
 public class AuthService {
@@ -82,13 +86,26 @@ public class AuthService {
                 UserDAO userDao = new UserDAO();
 
                 if (!userDao.isEmailUnique(email)) {
-                    return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"Message\": \"This email already exists\"}");
+                    return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"Message\": \"This email already exists.\"}");
                 }
 
                 String password = SecurityConfig.passwordEncoder().encode(registrationRequest.getPassword());
-                User u = new User(registrationRequest.getUsername(), password, registrationRequest.getFirstname(), registrationRequest.getLastname(), registrationRequest.getEmail(), registrationRequest.getBirthDate(), registrationRequest.getGender(), registrationRequest.getHeight(), registrationRequest.getWeight(), registrationRequest.getDailyCalories());
-                userDao.add(u);
-
+                User u = new User(registrationRequest.getUsername(),
+                        password,
+                        registrationRequest.getFirstname(),
+                        registrationRequest.getLastname(),
+                        registrationRequest.getEmail(),
+                        LocalDate.parse(registrationRequest.getBirthDate()),
+                        registrationRequest.getGender(),
+                        registrationRequest.getHeight(),
+                        registrationRequest.getWeight(),
+                        registrationRequest.getDailyCalories());
+                try {
+                    userDao.add(u);
+                    return ResponseEntity.ok().body("{\"Message\": \"Registration successful.\"}");
+                } catch (Exception e) {
+                    return ResponseEntity.status(401).body("{\"message\": \"Error during registration\"}");
+                }
             }
             else {
                 switch (status){
@@ -116,6 +133,30 @@ public class AuthService {
                 }
 
             }
+        }
+        finally {
+            // DatabaseConnection.getConnection().close();
+        }
+    }
+
+    public ResponseEntity<?> login(AuthenticationRequest authenticationRequest) {
+        try {
+            DatabaseConnection.getConnection();
+            UserDAO userDao = new UserDAO();
+            User user = userDao.getByUsername(authenticationRequest.getUsername());
+
+            if (user.getEmail() == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"Message\": \"Wrong password.\", \"errorCode\": \"INVALID_CREDENTIALS\"}");
+            }
+            // TODO: JWTResponse and testing
+            if (BCrypt.checkpw(authenticationRequest.getPassword(), user.getPassword())) {
+                return ResponseEntity.ok(new JwtAuthResponse(jwtService.generateToken(user.getUsername())));
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"Message\": \"Wrong password.\", \"errorCode\": \"INVALID_CREDENTIALS\"}");
+            }
+        }
+        finally {
+            // closeConnection();
         }
     }
 

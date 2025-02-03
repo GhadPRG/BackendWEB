@@ -10,11 +10,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
     private final JWTService jwtService;
 
-    public JwtAuthenticationFilter(JWTService jwtService) {
+    public JWTAuthenticationFilter(JWTService jwtService) {
         this.jwtService = jwtService;
     }
 
@@ -32,11 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String extractTokenFromHeader(HttpServletRequest request) {
-        String header = request.getHeader("Authorization");
-        if (header != null && header.startsWith("Bearer ")) {
-            return header.substring(7);
-        }
-        return null;
+        return JWTService.extractToken(request);
     }
 }
 

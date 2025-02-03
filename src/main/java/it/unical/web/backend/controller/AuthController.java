@@ -23,9 +23,4 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody AuthenticationRequest authRequest) {
         return authService.login(authRequest);
     }
-
-    @GetMapping("/api/auth/user")
-    public ResponseEntity<?> getUser() {
-        return authService.getUserInfo();
-    }
 }

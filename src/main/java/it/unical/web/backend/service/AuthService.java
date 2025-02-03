@@ -10,9 +10,6 @@ import it.unical.web.backend.service.Request.RegistrationRequest;
 import it.unical.web.backend.service.Response.JWTResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
@@ -27,12 +24,25 @@ public class AuthService {
     }
 
 
-    // -1 non valido
-    // 0 tutto ok
-    // 1 username, first name, last name, gender
-    // 2 pwd
+    /**
+     * Valida i dati contenuti in un oggetto RegistrationRequest.
+     *
+     * Questo metodo controlla se i campi obbligatori della richiesta di registrazione sono presenti e validi.
+     * Restituisce un codice numerico che indica il tipo di errore riscontrato:
+     *
+     * - -1 se uno o più campi obbligatori sono null.
+     * - 1 se il nome utente, il nome, il cognome o il genere contengono caratteri non validi.
+     * - 2 se la password non rispetta i criteri di validità.
+     * - 3 se l'email non ha un formato valido.
+     * - 4 se la data di nascita non è valida.
+     * - 5 se altezza o peso sono valori non positivi.
+     * - 6 se il valore delle calorie giornaliere è non positivo.
+     * - 0 se tutti i dati sono validi.
+     *
+     * @param registrationRequest l'oggetto contenente i dati di registrazione dell'utente
+     * @return un codice di errore specifico o `0` se i dati sono validi
+     */
     private int parseRegistationRequest(RegistrationRequest registrationRequest) {
-
         if (registrationRequest == null || registrationRequest.getEmail() == null || registrationRequest.getPassword() == null
                 || registrationRequest.getFirstname() == null || registrationRequest.getLastname() == null || registrationRequest.getUsername() == null
                 || registrationRequest.getGender() == null) {
@@ -111,7 +121,6 @@ public class AuthService {
                 }
             }
             else {
-                System.out.println(status);
                 switch (status){
                     case -1:
                         return ResponseEntity.badRequest().body("{\"Message\":\"Missing fields.\"}");
@@ -145,7 +154,6 @@ public class AuthService {
             if (user == null || user.getEmail() == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"Message\": \"User not found.\", \"errorCode\": \"INVALID_CREDENTIALS\"}");
             }
-            //System.out.println(user.getUsername());
             if (BCrypt.checkpw(authenticationRequest.getPassword(), user.getPassword())) {
                 JWTResponse t = new JWTResponse(jwtService.generateToken(user.getUsername()));
                 return ResponseEntity.ok().body(t);
@@ -155,15 +163,5 @@ public class AuthService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public ResponseEntity<?> getUserInfo() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated()) {
-            User user = (User) auth.getPrincipal();
-
-            return ResponseEntity.ok().body(user);
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"Message\": \"Unauthorized\"}");
     }
 }

@@ -3,19 +3,20 @@ package it.unical.web.backend.service;
 import it.unical.web.backend.config.security.SecurityConfig;
 import it.unical.web.backend.controller.DatabaseConnection;
 import it.unical.web.backend.persistence.RegexHandler;
-import it.unical.web.backend.persistence.dao.UserDAO;
+import it.unical.web.backend.persistence.dao.UserDAOImpl;
 import it.unical.web.backend.persistence.model.User;
 import it.unical.web.backend.service.Request.AuthenticationRequest;
 import it.unical.web.backend.service.Request.RegistrationRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.stereotype.Service;
 
-import javax.xml.crypto.Data;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDate;
 
-
+@Service
 public class AuthService {
     private JWTService jwtService;
 
@@ -39,7 +40,7 @@ public class AuthService {
         String firstname = registrationRequest.getFirstname();
         String lastname = registrationRequest.getLastname();
         String gender = registrationRequest.getGender();
-        if (!RegexHandler.getInstance().onlyCharacters(username) || !RegexHandler.getInstance().onlyCharacters(firstname)
+        if (!RegexHandler.getInstance().isAValidUsername(username) || !RegexHandler.getInstance().onlyCharacters(firstname)
                 || !RegexHandler.getInstance().onlyCharacters(lastname) || !RegexHandler.getInstance().onlyCharacters(gender))
         {
             return 1;
@@ -83,7 +84,7 @@ public class AuthService {
             if (status == 0) {
                 String email = registrationRequest.getEmail();
                 DatabaseConnection.getConnection();
-                UserDAO userDao = new UserDAO();
+                UserDAOImpl userDao = new UserDAOImpl();
 
                 if (!userDao.isEmailUnique(email)) {
                     return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"Message\": \"This email already exists.\"}");
@@ -108,57 +109,48 @@ public class AuthService {
                 }
             }
             else {
+                System.out.println(status);
                 switch (status){
                     case -1:
                         return ResponseEntity.badRequest().body("{\"Message\":\"Missing fields.\"}");
-                        break;
                     case 1:
                         return ResponseEntity.badRequest().body("{\"Message\":\"Error in First name, Last name, Username or Gender.\"}");
-                        break;
                     case 2:
                         return ResponseEntity.badRequest().body("{\"Message\":\"Password is invalid. Must have minimum eight characters, at least one letter, one number and one special character.\"}");
-                        break;
                     case 3:
                         return ResponseEntity.badRequest().body("{\"Message\":\"Email is invalid. Must have a valid email address.\"}");
-                        break;
                     case 4:
                         return ResponseEntity.badRequest().body("{\"Message\":\"Birth date is invalid.\"}");
-                        break;
                     case 5:
                         return ResponseEntity.badRequest().body("{\"Message\":\"Height or Weight is invalid.\"}");
-                        break;
                     case 6:
                         return ResponseEntity.badRequest().body("{\"Message\":\"DailyCalories is invalid.\"}");
-                    break;
+                    default:
+                        return ResponseEntity.badRequest().body("{\"Message\":\"Something went wrong\"}");
                 }
 
             }
-        }
-        finally {
-            // DatabaseConnection.getConnection().close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
     public ResponseEntity<?> login(AuthenticationRequest authenticationRequest) {
         try {
             DatabaseConnection.getConnection();
-            UserDAO userDao = new UserDAO();
+            UserDAOImpl userDao = new UserDAOImpl();
             User user = userDao.getByUsername(authenticationRequest.getUsername());
 
             if (user.getEmail() == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"Message\": \"Wrong password.\", \"errorCode\": \"INVALID_CREDENTIALS\"}");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"Message\": \"User not found.\", \"errorCode\": \"INVALID_CREDENTIALS\"}");
             }
-            // TODO: JWTResponse and testing
             if (BCrypt.checkpw(authenticationRequest.getPassword(), user.getPassword())) {
-                return ResponseEntity.ok(new JwtAuthResponse(jwtService.generateToken(user.getUsername())));
+                return ResponseEntity.ok(new JWTResponse(jwtService.generateToken(user.getUsername())));
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"Message\": \"Wrong password.\", \"errorCode\": \"INVALID_CREDENTIALS\"}");
             }
-        }
-        finally {
-            // closeConnection();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
-
-
 }

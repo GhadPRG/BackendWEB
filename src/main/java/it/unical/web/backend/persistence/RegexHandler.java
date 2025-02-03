@@ -20,7 +20,7 @@ public class RegexHandler {
     }
 
     public boolean onlyCharacters(String x) {
-        String Regex = "^[a-zA-Z]";
+        String Regex = "^[a-zA-Z]+$";
         return match(Regex, x);
     }
 
@@ -32,13 +32,18 @@ public class RegexHandler {
 
     public boolean isAValidPassword(String password) {
         String Regex = "\"^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$\"";
-        String regex_debug = "^.*$\n"; // per evitare di scrivere password buone nelle fasi di testing
+        String regex_debug = "^.*$"; // per evitare di scrivere password buone nelle fasi di testing
         return match(regex_debug, password);
     }
 
     public boolean isAValidDate(String date) {
         String Regex = "^\\d{4}\\-(0[1-9]|1[012])\\-(0[1-9]|[12][0-9]|3[01])$";
         return match(Regex, date);
+    }
+
+    public boolean isAValidUsername(String username) {
+        String Regex = "^[A-Za-z][A-Za-z0-9_]{3,29}+$";
+        return match(Regex, username);
     }
 
 

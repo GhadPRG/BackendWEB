@@ -229,4 +229,33 @@ public class UserDAOImpl implements UserDAO {
         }
     }
 
+    public User getByUsername(String username) {
+        String query = "SELECT * FROM \"User\" WHERE u.username = ?";
+        User user = null;
+        try(Connection dbConnection = DatabaseConnection.getConnection();
+            PreparedStatement statement = dbConnection.prepareStatement(query);){
+            statement.setString(1, username);
+            ResultSet rs = statement.executeQuery();
+            if(rs.next()) {
+                user = mapResultToUser(rs);
+            }
+        }catch (SQLException e){
+            System.out.println("Eccezione in getByUsername(UserDAO)");
+            throw new RuntimeException(e);
+        }
+        return user;
+    }
+
+    public boolean isEmailUnique(String email) {
+        String query = "SELECT email FROM \"UserInfo\" WHERE email = ?;";
+        try(Connection dbConnection = DatabaseConnection.getConnection(); PreparedStatement statement = dbConnection.prepareStatement(query)) {
+            statement.setString(1, email);
+            ResultSet rs = statement.executeQuery();
+            return !rs.next();
+        }catch (SQLException e){
+            System.out.println("Eccezione in isEmailUnique(UserDAO)");
+            throw new RuntimeException(e);
+        }
+    }
+
 }

@@ -18,33 +18,33 @@ CREATE TABLE "UserInfo" (
 );
 
 CREATE TABLE dish_info (
-                           id SERIAL PRIMARY KEY,
-                           nome VARCHAR(255),
-                           kcalories INT,
-                           carbs INT,
-                           proteins INT,
-                           fats INT,
-                           fibers INT,
-                           user_id INT NOT NULL,
-                           FOREIGN KEY (user_id) REFERENCES "User"(id) ON DELETE CASCADE
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(255),
+    kcalories INT,
+    carbs INT,
+    proteins INT,
+    fats INT,
+    fibers INT,
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES "User"(id) ON DELETE CASCADE
 );
 
 CREATE TABLE meals (
-                       id SERIAL PRIMARY KEY,
-                       user_id INT NOT NULL,
-                       meal_type VARCHAR(50),
-                       meal_date DATE NOT NULL,
-                       FOREIGN KEY (user_id) REFERENCES "User"(id) ON DELETE CASCADE,
-                       UNIQUE (user_id, meal_type, meal_date)
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    meal_type VARCHAR(50),
+    meal_date DATE NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES "User"(id) ON DELETE CASCADE,
+    UNIQUE (user_id, meal_type, meal_date)
 );
 
 CREATE TABLE dishes (
-                        id SERIAL PRIMARY KEY,
-                        meal_id INT NOT NULL,
-                        dish_info_id INT NOT NULL,
-                        quantity INT DEFAULT 1,
-                        FOREIGN KEY (meal_id) REFERENCES meals(id) ON DELETE CASCADE,
-                        FOREIGN KEY (dish_info_id) REFERENCES dish_info(id) ON DELETE CASCADE
+    id SERIAL PRIMARY KEY,
+    meal_id INT NOT NULL,
+    dish_info_id INT NOT NULL,
+    quantity INT DEFAULT 1,
+    FOREIGN KEY (meal_id) REFERENCES meals(id) ON DELETE CASCADE,
+    FOREIGN KEY (dish_info_id) REFERENCES dish_info(id) ON DELETE CASCADE
 );
 
 -- Tabella Esercizi
@@ -77,46 +77,45 @@ CREATE TABLE workout_plan_exercises (
     UNIQUE (workout_plan_id, exercise_id)
 );
 
-CREATE TABLE "CategoryGroup" (
+CREATE TABLE categories (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255)
-);
-
-CREATE TABLE "CategoryTag" (
-    id SERIAL PRIMARY KEY,
-    group_id INT,
-    tag VARCHAR(255),
+    name VARCHAR(100) NOT NULL UNIQUE, -- Nome della categoria (es. "Priorità", "Emozioni")
     description TEXT,
-    CONSTRAINT categorytag_group_id_fkey FOREIGN KEY (group_id) REFERENCES "CategoryGroup"(id)
+    color VARCHAR(100)
 );
 
-CREATE TABLE "Note" (
+CREATE TABLE tags (
     id SERIAL PRIMARY KEY,
-    user_id INT,
-    categoryTag_id BIGINT NOT NULL,
-    title VARCHAR(255),
+    category_id INT NOT NULL, -- Riferimento alla categoria del tag
+    name VARCHAR(100) NOT NULL, -- Nome del tag (es. "Importante", "Felice")
     description TEXT,
-    CONSTRAINT note_user_id_fkey FOREIGN KEY (user_id) REFERENCES "User"(id) ON DELETE CASCADE,
-    CONSTRAINT note_categorytag_id_fkey FOREIGN KEY (categoryTag_id) REFERENCES "CategoryTag"(id)
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
 );
 
-CREATE TABLE "DailyMood" (
-    id BIGINT NOT NULL PRIMARY KEY,
-    categoryTag_id BIGINT NOT NULL,
-    user_id BIGINT NOT NULL,
-    date TIMESTAMP NOT NULL,
-    description VARCHAR(255) NOT NULL,
-    CONSTRAINT dailymood_categorytag_id_fkey FOREIGN KEY (categoryTag_id) REFERENCES "CategoryTag"(id),
-    CONSTRAINT dailymood_user_id_fkey FOREIGN KEY (user_id) REFERENCES "User"(id) ON DELETE CASCADE
-);
-
-CREATE TABLE "DailyNote" (
+CREATE TABLE notes (
     id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL,
-    date TIMESTAMP NOT NULL,
-    title VARCHAR(255),
-    description TEXT,
-    CONSTRAINT dailynote_user_id_fkey FOREIGN KEY (user_id) REFERENCES "User"(id) ON DELETE CASCADE
+    user_id INT NOT NULL, -- Riferimento all'utente proprietario della nota
+    title VARCHAR(100) NOT NULL, -- Titolo della nota
+    content TEXT,
+    created_at DATE DEFAULT CURRENT_DATE, -- Data di creazione della nota
+    FOREIGN KEY (user_id) REFERENCES "User"(id) ON DELETE CASCADE
 );
 
+CREATE TABLE mood_tracker (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL, -- Riferimento all'utente proprietario
+    mood_level INT NOT NULL CHECK (mood_level BETWEEN 1 AND 5), -- Livello di umore (da 1 a 5)
+    mood_date DATE NOT NULL DEFAULT CURRENT_DATE, -- Data della registrazione dell'umore
+    notes TEXT, -- Note opzionali sull'umore
+    FOREIGN KEY (user_id) REFERENCES "User"(id) ON DELETE CASCADE
+);
+
+CREATE TABLE entity_tags (
+    entity_tag_id SERIAL PRIMARY KEY,
+    entity_id INT NOT NULL, -- ID dell'entità (nota o mood)
+    entity_type VARCHAR(50) NOT NULL, -- Tipo di entità ('note' o 'mood')
+    tag_id INT NOT NULL, -- Riferimento al tag
+    FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE,
+    UNIQUE (entity_id, entity_type, tag_id)
+);
 

@@ -65,24 +65,6 @@ public class UserDAOImpl implements UserDAO {
         return user;
     }
 
-    public User getByUsername(String username) {
-        String query = "SELECT * FROM \"User\" WHERE u.username = ?";
-        User user = null;
-        try(Connection dbConnection = DatabaseConnection.getConnection();
-            PreparedStatement statement = dbConnection.prepareStatement(query);){
-            statement.setString(1, username);
-
-            ResultSet rs = statement.executeQuery();
-            if(rs.next()) {
-                user = mapResultToUser(rs);
-            }
-        }catch (SQLException e){
-            System.out.println("Eccezione in getByUsername(UserDAO)");
-            throw new RuntimeException(e);
-        }
-        return user;
-    }
-
     //Visto che l'iscrizione
     @Override
     public void add(User entity) {
@@ -244,18 +226,6 @@ public class UserDAOImpl implements UserDAO {
         } catch (SQLException e) {
             System.out.println("Eccezione in delete(UserDAO)"+e.getMessage());
 
-        }
-    }
-
-    public boolean isEmailUnique(String email) {
-        String query = "SELECT email FROM \"UserInfo\" WHERE email = ?;";
-        try(Connection dbConnection = DatabaseConnection.getConnection(); PreparedStatement statement = dbConnection.prepareStatement(query)) {
-            statement.setString(1, email);
-            ResultSet rs = statement.executeQuery();
-            return !rs.next();
-        }catch (SQLException e){
-            System.out.println("Eccezione in isEmailUnique(UserDAO)");
-            throw new RuntimeException(e);
         }
     }
 

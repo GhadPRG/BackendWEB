@@ -9,11 +9,11 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class Note {
+public class Mood {
     private long id;
     private long user;
-    private String title;
-    private String content;
-    private LocalDate created_at;
-
+    private int moodLevel;
+    private LocalDate moodDate;
+    private String notes;
+    private Integer noteId; //Uso integer così può essere null visto che il mood nelle note è opzionale.
 }

@@ -30,15 +30,11 @@ public class SecurityConfig {
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 )
-                .formLogin(form -> form
-                        .loginProcessingUrl("/api/login")
-                        .successHandler((req, res, auth) -> res.setStatus(200))
-                        .failureHandler((req, res, ex) -> res.setStatus(401))
-                )
                 .logout(logout -> logout
                         .logoutUrl("/api/logout")
                         .logoutSuccessHandler((req, res, auth) -> res.setStatus(200))
-                );
+                )
+                .addFilterBefore(new JwtAuthenticationFilter(jwtService), UsernamePasswordAuthenticationFilter.class);;
         return http.build();
     }
 }

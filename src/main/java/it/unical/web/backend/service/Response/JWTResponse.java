@@ -1,7 +1,6 @@
-package it.unical.web.backend.service;
+package it.unical.web.backend.service.Response;
 
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 public class JWTResponse {

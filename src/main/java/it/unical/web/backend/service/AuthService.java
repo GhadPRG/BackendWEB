@@ -7,13 +7,15 @@ import it.unical.web.backend.persistence.dao.UserDAOImpl;
 import it.unical.web.backend.persistence.model.User;
 import it.unical.web.backend.service.Request.AuthenticationRequest;
 import it.unical.web.backend.service.Request.RegistrationRequest;
+import it.unical.web.backend.service.Response.JWTResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.time.LocalDate;
 
 @Service
@@ -138,19 +140,30 @@ public class AuthService {
     public ResponseEntity<?> login(AuthenticationRequest authenticationRequest) {
         try {
             DatabaseConnection.getConnection();
-            UserDAOImpl userDao = new UserDAOImpl();
-            User user = userDao.getByUsername(authenticationRequest.getUsername());
+            User user = UserDAOImpl.getByUsername(authenticationRequest.getUsername());
 
-            if (user.getEmail() == null) {
+            if (user == null || user.getEmail() == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"Message\": \"User not found.\", \"errorCode\": \"INVALID_CREDENTIALS\"}");
             }
+            //System.out.println(user.getUsername());
             if (BCrypt.checkpw(authenticationRequest.getPassword(), user.getPassword())) {
-                return ResponseEntity.ok(new JWTResponse(jwtService.generateToken(user.getUsername())));
+                JWTResponse t = new JWTResponse(jwtService.generateToken(user.getUsername()));
+                return ResponseEntity.ok().body(t);
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"Message\": \"Wrong password.\", \"errorCode\": \"INVALID_CREDENTIALS\"}");
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public ResponseEntity<?> getUserInfo() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated()) {
+            User user = (User) auth.getPrincipal();
+
+            return ResponseEntity.ok().body(user);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"Message\": \"Unauthorized\"}");
     }
 }

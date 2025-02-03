@@ -4,7 +4,9 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import static io.jsonwebtoken.SignatureAlgorithm.HS256;
 import java.security.Key;
@@ -14,7 +16,7 @@ import java.util.Date;
 @Service
 public class JWTService {
 
-    @Value("{jwt.secret}")
+    @Value("${jwt.secret}")
     private String SECRET_KEY;
 
     private Key getSigningKey() {
@@ -57,5 +59,19 @@ public class JWTService {
     public boolean validateToken(String token, String username) {
         System.out.println("Username extracted: " + extractUsername(token));
         return (username.equals(extractUsername(token)) && !isTokenExpired(token));
+    }
+
+    public static String extractToken(HttpServletRequest request) {
+        String BEARER_PREFIX = "Bearer ";
+        String authorizationHeader = request.getHeader("Authorization");
+
+        if (authorizationHeader != null && authorizationHeader.startsWith(BEARER_PREFIX)) {
+            return authorizationHeader.substring(BEARER_PREFIX.length());
+        }
+        return null;
+    }
+
+    public Authentication getAuthentication(String token) {
+
     }
 }

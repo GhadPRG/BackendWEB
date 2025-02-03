@@ -13,7 +13,7 @@ import java.util.List;
 
 public class UserDAOImpl implements UserDAO {
 
-    private User mapResultToUser(ResultSet rs) throws SQLException {
+    private static User mapResultToUser(ResultSet rs) throws SQLException {
         return new User(
                 rs.getInt("id"),
                 rs.getString("username"),
@@ -229,8 +229,8 @@ public class UserDAOImpl implements UserDAO {
         }
     }
 
-    public User getByUsername(String username) {
-        String query = "SELECT * FROM \"User\" WHERE u.username = ?";
+    public static User getByUsername(String username) {
+        String query = "SELECT * FROM \"User\" u LEFT JOIN \"UserInfo\" ui ON u.id = ui.user_id WHERE u.username = ?";
         User user = null;
         try(Connection dbConnection = DatabaseConnection.getConnection();
             PreparedStatement statement = dbConnection.prepareStatement(query);){

@@ -3,8 +3,10 @@ package it.unical.web.backend.service;
 import it.unical.web.backend.config.security.SecurityConfig;
 import it.unical.web.backend.controller.DatabaseConnection;
 import it.unical.web.backend.persistence.RegexHandler;
+import it.unical.web.backend.persistence.dao.DAOInterface.UserDAO;
 import it.unical.web.backend.persistence.dao.UserDAOImpl;
 import it.unical.web.backend.persistence.model.User;
+import it.unical.web.backend.persistence.model.UserInfo;
 import it.unical.web.backend.service.Request.AuthenticationRequest;
 import it.unical.web.backend.service.Request.RegistrationRequest;
 import it.unical.web.backend.service.Response.JWTResponse;
@@ -102,16 +104,18 @@ public class AuthService {
                 String password = SecurityConfig.passwordEncoder().encode(registrationRequest.getPassword());
                 User u = new User(registrationRequest.getUsername(),
                         password,
-                        registrationRequest.getFirstname(),
-                        registrationRequest.getLastname(),
-                        registrationRequest.getEmail(),
-                        LocalDate.parse(registrationRequest.getBirthDate()),
-                        registrationRequest.getGender(),
-                        registrationRequest.getHeight(),
-                        registrationRequest.getWeight(),
-                        registrationRequest.getDailyCalories());
+                        new UserInfo(registrationRequest.getFirstname(),
+                                registrationRequest.getLastname(),
+                                registrationRequest.getEmail(),
+                                LocalDate.parse(registrationRequest.getBirthDate()),
+                                registrationRequest.getGender(),
+                                registrationRequest.getHeight(),
+                                registrationRequest.getWeight(),
+                                registrationRequest.getDailyCalories()));
+
+
                 try {
-                    userDao.add(u);
+                    userDao.createUser(u);
                     return ResponseEntity.ok().body("{\"Message\": \"Registration successful.\"}");
                 } catch (Exception e) {
                     return ResponseEntity.status(401).body("{\"message\": \"Error during registration\"}");
@@ -146,9 +150,10 @@ public class AuthService {
     public ResponseEntity<?> login(AuthenticationRequest authenticationRequest) {
         try {
             DatabaseConnection.getConnection();
-            User user = UserDAOImpl.getByUsername(authenticationRequest.getUsername());
+            UserDAOImpl userDao = new UserDAOImpl();
+            User user = userDao.getUserByUsername(authenticationRequest.getUsername());
 
-            if (user == null || user.getEmail() == null) {
+            if (user == null || user.getUserInfo().getEmail() == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"Message\": \"User not found.\", \"errorCode\": \"INVALID_CREDENTIALS\"}");
             }
             if (BCrypt.checkpw(authenticationRequest.getPassword(), user.getPassword())) {

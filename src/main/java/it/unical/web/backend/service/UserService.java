@@ -1,7 +1,9 @@
 package it.unical.web.backend.service;
 
 import it.unical.web.backend.persistence.dao.UserDAOImpl;
+import it.unical.web.backend.persistence.dao.UserInfoDAOImpl;
 import it.unical.web.backend.persistence.model.User;
+import it.unical.web.backend.persistence.model.UserInfo;
 import it.unical.web.backend.service.Response.UserDetailResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +19,10 @@ public class UserService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null) {
             UserDetails userDetails = (UserDetails) auth.getPrincipal();
-            User user = UserDAOImpl.getByUsername(userDetails.getUsername());
+
+            UserInfoDAOImpl userDAO = new UserInfoDAOImpl();
+            UserInfo user = userDAO.getUserInfoByUsername(userDetails.getUsername());
+
             UserDetailResponse response = new UserDetailResponse(user);
             return ResponseEntity.ok().body(response);
         }

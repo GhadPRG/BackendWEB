@@ -23,15 +23,11 @@ public class User implements UserDetails {
     private String password;
     private UserInfo userInfo;
 
-
-
-
-
-
-
-
-
-
+    public User(String username, String password, UserInfo userInfo) {
+        this.username = username;
+        this.password = password;
+        this.userInfo = userInfo;
+    }
 
     @Override
     public String getPassword() {

@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 public class ApplicationConfig {
     @Bean
     public UserDetailsService userDetailsService(){
-        return username -> (UserDetails) UserDAOImpl.getByUsername(username);
+        UserDAOImpl userDAO = new UserDAOImpl();
+        return username -> (UserDetails) userDAO.getUserByUsername(username);
     }
 }

@@ -8,7 +8,40 @@ import it.unical.web.backend.persistence.model.UserInfo;
 import java.sql.*;
 
 public class UserInfoDAOImpl implements UserInfoDAO {
-    private Connection connection= DatabaseConnection.getConnection();
+    private Connection connection = DatabaseConnection.getConnection();
+
+    public UserInfo getUserInfoByUsername(String username) {
+        String query = "SELECT ui.* " +
+                "FROM \"UserInfo\" ui " +
+                "JOIN \"User\" u ON ui.user_id = u.id " +
+                "WHERE u.username = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                UserInfo userInfo = new UserInfo();
+                User user = new User();
+                user.setId(rs.getInt("user_id")); // Assume the user is already fetched elsewhere
+                userInfo.setUser(user);
+
+                userInfo.setFirstName(rs.getString("first_name"));
+                userInfo.setLastName(rs.getString("last_name"));
+                userInfo.setEmail(rs.getString("email"));
+                userInfo.setBirth(rs.getDate("birth").toLocalDate());
+                userInfo.setGender(rs.getString("gender"));
+                userInfo.setHeight(rs.getFloat("height"));
+                userInfo.setWeight(rs.getFloat("weight"));
+                userInfo.setDailyKcalories(rs.getInt("daily_kcalories"));
+
+                return userInfo;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
     @Override
     public UserInfo getUserInfoByUserId(int userId) {
         String query = "SELECT * FROM \"UserInfo\" WHERE user_id = ?";

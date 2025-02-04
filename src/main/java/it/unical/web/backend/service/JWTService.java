@@ -1,28 +1,31 @@
 package it.unical.web.backend.service;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import static io.jsonwebtoken.SignatureAlgorithm.HS256;
 import java.security.Key;
-import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 
 @Service
 public class JWTService {
 
+    private final UserDetailsService userDetailsService;
     @Value("${jwt.secret}")
     private String SECRET_KEY;
+
+    public JWTService(@Qualifier("userDetailsService") UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
     private Key getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
@@ -77,6 +80,8 @@ public class JWTService {
     }
 
     public Authentication getAuthentication(String token) {
-        return new UsernamePasswordAuthenticationToken(this.extractUsername(token), null, null);
+        String username = extractUsername(token);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        return new UsernamePasswordAuthenticationToken(userDetails, null, null);
     }
 }

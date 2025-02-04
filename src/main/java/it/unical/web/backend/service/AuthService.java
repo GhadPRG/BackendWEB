@@ -8,6 +8,7 @@ import it.unical.web.backend.persistence.model.User;
 import it.unical.web.backend.service.Request.AuthenticationRequest;
 import it.unical.web.backend.service.Request.RegistrationRequest;
 import it.unical.web.backend.service.Response.JWTResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -17,12 +18,8 @@ import java.time.LocalDate;
 
 @Service
 public class AuthService {
+    @Autowired
     private JWTService jwtService;
-
-    public AuthService(JWTService jwtService) {
-        this.jwtService = jwtService;
-    }
-
 
     /**
      * Valida i dati contenuti in un oggetto RegistrationRequest.

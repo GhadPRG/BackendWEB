@@ -4,6 +4,7 @@ import it.unical.web.backend.config.security.SecurityConfig;
 import it.unical.web.backend.controller.DatabaseConnection;
 import it.unical.web.backend.persistence.RegexHandler;
 import it.unical.web.backend.persistence.dao.DAOInterface.UserDAO;
+import it.unical.web.backend.persistence.dao.DAOInterface.UserInfoDAO;
 import it.unical.web.backend.persistence.dao.UserDAOImpl;
 import it.unical.web.backend.persistence.dao.UserInfoDAOImpl;
 import it.unical.web.backend.persistence.model.User;
@@ -160,7 +161,7 @@ public class AuthService {
             UserDAOImpl userDao = new UserDAOImpl();
             User user = userDao.getUserByUsername(authenticationRequest.getUsername());
 
-            if (user == null || user.getUserInfo().getEmail() == null) {
+            if (user.getUsername() == null || user.getPassword() == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"Message\": \"User not found.\", \"errorCode\": \"INVALID_CREDENTIALS\"}");
             }
             if (BCrypt.checkpw(authenticationRequest.getPassword(), user.getPassword())) {

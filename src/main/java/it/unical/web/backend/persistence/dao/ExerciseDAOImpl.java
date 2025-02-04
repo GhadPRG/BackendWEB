@@ -3,6 +3,7 @@ package it.unical.web.backend.persistence.dao;
 import it.unical.web.backend.controller.DatabaseConnection;
 import it.unical.web.backend.persistence.dao.DAOInterface.ExerciseDAO;
 import it.unical.web.backend.persistence.model.Exercise;
+import it.unical.web.backend.persistence.model.User;
 import it.unical.web.backend.persistence.model.WorkoutPlan;
 import it.unical.web.backend.persistence.model.WorkoutPlanAndExercise;
 
@@ -11,124 +12,129 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.math.BigDecimal;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
-public class ExerciseDAOImpl implements ExerciseDAO{
+public class ExerciseDAOImpl implements ExerciseDAO {
+    private Connection connection=DatabaseConnection.getConnection();
 
-    private Exercise mapToExercise(ResultSet rs) throws SQLException {
-        Exercise exercise = new Exercise();
-        exercise.setId(rs.getLong("id"));
-        exercise.setName(rs.getString("name"));
-        exercise.setNotes(rs.getString("notes"));
-        exercise.setMuscleGroup(rs.getString("muscle_group"));
-        exercise.setReps(rs.getInt("reps"));
-        exercise.setSets(rs.getInt("sets"));
-        exercise.setKcalPerRep(rs.getDouble("kcal_per_rep"));
-        exercise.setWeight(rs.getDouble("weight"));
-        exercise.setCreatedBy(rs.getLong("created_by"));
-        return exercise;
-    }
+    @Override
+    public Exercise getExerciseById(int id) {
+        String query = "SELECT * FROM exercises WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Exercise exercise = new Exercise();
+                exercise.setId(rs.getInt("id"));
+                exercise.setName(rs.getString("name"));
+                exercise.setNotes(rs.getString("notes"));
+                exercise.setMuscleGroup(rs.getString("muscle_group"));
+                exercise.setReps(rs.getInt("reps"));
+                exercise.setSets(rs.getInt("sets"));
+                exercise.setKcalPerRep(rs.getFloat("kcal_per_rep"));
+                exercise.setWeight(rs.getFloat("weight"));
 
+                // Fetch the user who created the exercise
+                User createdBy = new User();
+                createdBy.setId(rs.getInt("created_by")); // Assume the user is already fetched elsewhere
+                exercise.setCreatedBy(createdBy);
 
-    public void createExercise(Exercise exercise) {
-        String query = "INSERT INTO exercises (name, notes, muscle_group, reps, sets, kcal_per_rep, weight, created_by) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING id";
-
-        try(Connection dbConnection= DatabaseConnection.getConnection();
-        PreparedStatement preparedStatement = dbConnection.prepareStatement(query)){
-            preparedStatement.setString(1, exercise.getName());
-            preparedStatement.setString(2, exercise.getNotes());
-            preparedStatement.setString(3, exercise.getMuscleGroup());
-            preparedStatement.setInt(4, exercise.getReps());
-            preparedStatement.setInt(5, exercise.getSets());
-            preparedStatement.setDouble(6, exercise.getKcalPerRep());
-            preparedStatement.setDouble(7, exercise.getWeight());
-            preparedStatement.setLong(8, exercise.getCreatedBy());
-
-            preparedStatement.execute();
-
+                return exercise;
+            }
         } catch (SQLException e) {
-            System.out.println("Eccezione in createExercise(ExerciseDAO): " + e.getMessage());
+            e.printStackTrace();
         }
-
-
+        return null;
     }
 
     @Override
-    public List<Exercise> getExercisesByUserId(Long userId) {
+    public List<Exercise> getAllExercisesByUser(int userId) {
+        List<Exercise> exercises = new ArrayList<>();
         String query = "SELECT * FROM exercises WHERE created_by = ?";
-        List<Exercise> exercises = new ArrayList<>();
-        try (Connection dbConnection=DatabaseConnection.getConnection();
-        PreparedStatement preparedStatement=dbConnection.prepareStatement(query);
-        ){
-            preparedStatement.setLong(1, userId);
-            ResultSet resultSet=preparedStatement.executeQuery();
-            while(resultSet.next()){
-                exercises.add(mapToExercise(resultSet));
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Exercise exercise = new Exercise();
+                exercise.setId(rs.getInt("id"));
+                exercise.setName(rs.getString("name"));
+                exercise.setNotes(rs.getString("notes"));
+                exercise.setMuscleGroup(rs.getString("muscle_group"));
+                exercise.setReps(rs.getInt("reps"));
+                exercise.setSets(rs.getInt("sets"));
+                exercise.setKcalPerRep(rs.getFloat("kcal_per_rep"));
+                exercise.setWeight(rs.getFloat("weight"));
+
+                // Fetch the user who created the exercise
+                User createdBy = new User();
+                createdBy.setId(userId); // Assume the user is already fetched elsewhere
+                exercise.setCreatedBy(createdBy);
+
+                exercises.add(exercise);
             }
-
         } catch (SQLException e) {
-            System.out.println("Eccezione in getExercisesByUserId(ExerciseDAO)"+e.getMessage());
+            e.printStackTrace();
         }
-
-        System.out.println("Trovati: "+exercises.size()+" esercizi");
         return exercises;
     }
 
     @Override
-    public void createWorkoutPlan(WorkoutPlan workoutPlan) {
-        String query = "INSERT INTO workout_plans (name, description, created_by) VALUES (?, ?, ?) RETURNING id";
+    public void createExercise(Exercise exercise) {
+        String query = "INSERT INTO exercises (name, notes, muscle_group, reps, sets, kcal_per_rep, weight, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, exercise.getName());
+            stmt.setString(2, exercise.getNotes());
+            stmt.setString(3, exercise.getMuscleGroup());
+            stmt.setInt(4, exercise.getReps());
+            stmt.setInt(5, exercise.getSets());
+            stmt.setFloat(6, exercise.getKcalPerRep());
+            stmt.setFloat(7, exercise.getWeight());
+            stmt.setInt(8, exercise.getCreatedBy().getId());
+            stmt.executeUpdate();
 
-        try(Connection dbConnection=DatabaseConnection.getConnection();
-        PreparedStatement preparedStatement=dbConnection.prepareStatement(query)){
-            preparedStatement.setString(1,workoutPlan.getName());
-            preparedStatement.setString(2, workoutPlan.getDescription());
-            preparedStatement.setLong(3, workoutPlan.getCreated_by());
-
-            preparedStatement.execute();
-
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                exercise.setId(rs.getInt(1));
+            }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
-
-    }
-
-
-    public void addExerciseToWorkoutPlan(WorkoutPlanAndExercise wpaExercise) {
-        String query = "INSERT INTO workout_plan_exercises (workout_plan_id, exercise_id) VALUES (?, ?)";
-
-        try (Connection dbConnection=DatabaseConnection.getConnection();
-             PreparedStatement preparedStatement=dbConnection.prepareStatement(query)){
-            preparedStatement.setLong(1, wpaExercise.getWorkoutPlanId());
-            preparedStatement.setLong(2, wpaExercise.getExerciseId());
-            preparedStatement.execute();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
     }
 
     @Override
-    public List<Exercise> getExercisesForWorkoutPlan(long workoutPlanId) {
-        String query = "SELECT e.* FROM exercises e " +
-                "JOIN workout_plan_exercises wpe ON e.id = wpe.exercise_id " +
-                "WHERE wpe.workout_plan_id = ?";
-        List<Exercise> exercises = new ArrayList<>();
-
-        try (Connection dbConnection= DatabaseConnection.getConnection();
-            PreparedStatement preparedStatement=dbConnection.prepareStatement(query)
-        ){
-            preparedStatement.setLong(1, workoutPlanId);
-
-            ResultSet resultSet=preparedStatement.executeQuery();
-            while(resultSet.next()){
-                exercises.add(mapToExercise(resultSet));
-            }
-
+    public void updateExercise(Exercise exercise) {
+        String query = "UPDATE exercises SET name = ?, notes = ?, muscle_group = ?, reps = ?, sets = ?, kcal_per_rep = ?, weight = ?, created_by = ? WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, exercise.getName());
+            stmt.setString(2, exercise.getNotes());
+            stmt.setString(3, exercise.getMuscleGroup());
+            stmt.setInt(4, exercise.getReps());
+            stmt.setInt(5, exercise.getSets());
+            stmt.setFloat(6, exercise.getKcalPerRep());
+            stmt.setFloat(7, exercise.getWeight());
+            stmt.setInt(8, exercise.getCreatedBy().getId());
+            stmt.setFloat(9, exercise.getId());
+            stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
+    }
 
-        return exercises;
+    @Override
+    public void deleteExercise(int id) {
+        String query = "DELETE FROM exercises WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

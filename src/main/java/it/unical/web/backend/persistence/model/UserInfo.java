@@ -20,17 +20,4 @@ public class UserInfo {
     private float height;
     private float weight;
     private int dailyKcalories;
-
-    public UserInfo(String firstName, String lastName, String email, LocalDate birth, String gender, float height, float weight, int dailyKcalories) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.birth = birth;
-        this.gender = gender;
-        this.height = height;
-        this.weight = weight;
-        this.dailyKcalories = dailyKcalories;
-    }
-
-    // Getters and Setters
 }

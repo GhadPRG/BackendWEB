@@ -5,6 +5,7 @@ import it.unical.web.backend.controller.DatabaseConnection;
 import it.unical.web.backend.persistence.RegexHandler;
 import it.unical.web.backend.persistence.dao.DAOInterface.UserDAO;
 import it.unical.web.backend.persistence.dao.UserDAOImpl;
+import it.unical.web.backend.persistence.dao.UserInfoDAOImpl;
 import it.unical.web.backend.persistence.model.User;
 import it.unical.web.backend.persistence.model.UserInfo;
 import it.unical.web.backend.service.Request.AuthenticationRequest;
@@ -93,29 +94,35 @@ public class AuthService {
         try {
             int status = parseRegistationRequest(registrationRequest);
             if (status == 0) {
+                String username = registrationRequest.getUsername();
                 String email = registrationRequest.getEmail();
                 DatabaseConnection.getConnection();
                 UserDAOImpl userDao = new UserDAOImpl();
+                UserInfoDAOImpl userInfoDAO = new UserInfoDAOImpl();
 
-                if (!userDao.isEmailUnique(email)) {
+
+                if (!userDao.isUsernameUnique(username)) {
+                    return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"Message\": \"This username already exists.\"}");
+                }
+                else if (!userInfoDAO.isEmailUnique(email)) {
                     return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"Message\": \"This email already exists.\"}");
                 }
 
-                String password = SecurityConfig.passwordEncoder().encode(registrationRequest.getPassword());
-                User u = new User(registrationRequest.getUsername(),
-                        password,
-                        new UserInfo(registrationRequest.getFirstname(),
-                                registrationRequest.getLastname(),
-                                registrationRequest.getEmail(),
-                                LocalDate.parse(registrationRequest.getBirthDate()),
-                                registrationRequest.getGender(),
-                                registrationRequest.getHeight(),
-                                registrationRequest.getWeight(),
-                                registrationRequest.getDailyCalories()));
-
-
                 try {
+                    String password = SecurityConfig.passwordEncoder().encode(registrationRequest.getPassword());
+                    User u = new User(username, password, null);
                     userDao.createUser(u);
+                    UserInfo userInfo = new UserInfo(u,
+                            registrationRequest.getFirstname(),
+                            registrationRequest.getLastname(),
+                            email,
+                            LocalDate.parse(registrationRequest.getBirthDate()),
+                            registrationRequest.getGender(),
+                            registrationRequest.getHeight(),
+                            registrationRequest.getWeight(),
+                            registrationRequest.getDailyCalories());
+                    userInfoDAO.createUserInfo(userInfo);
+
                     return ResponseEntity.ok().body("{\"Message\": \"Registration successful.\"}");
                 } catch (Exception e) {
                     return ResponseEntity.status(401).body("{\"message\": \"Error during registration\"}");

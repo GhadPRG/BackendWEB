@@ -15,13 +15,12 @@ import org.springframework.stereotype.Service;
 public class UserService {
     public ResponseEntity<?> getUserInfo() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof UserDetails) {
+        if (auth != null) {
             UserDetails userDetails = (UserDetails) auth.getPrincipal();
             User user = UserDAOImpl.getByUsername(userDetails.getUsername());
             UserDetailResponse response = new UserDetailResponse(user);
             return ResponseEntity.ok().body(response);
         }
-
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"Message\": \"Unauthorized\"}");
     }
 }

@@ -3,11 +3,10 @@ import it.unical.web.backend.persistence.model.User;
 
 import java.util.List;
 
-public interface UserDAO{
-
-    List<User> getAll();
-    User getById(int id);
-    void add(User entity);
-    void update(User entity);
-    void delete(int id);
+public interface UserDAO {
+    User getUserById(int id);
+    User getUserByUsername(String username);
+    void createUser(User user);
+    void updateUser(User user);
+    void deleteUser(int id);
 }

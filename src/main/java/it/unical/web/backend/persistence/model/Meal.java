@@ -1,8 +1,9 @@
 package it.unical.web.backend.persistence.model;
 
-import lombok.*;
-
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.*;
 
 @Getter
 @Setter
@@ -10,13 +11,13 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
+
 public class Meal {
-    private long mealId;
-    private long userId;
+    private int id;
+    private User user;
     private String mealType;
     private LocalDate mealDate;
-    private long dishInfoId;
-    DishInfo dishInfo;
-    private long dishId;
-    private int quantity;
+    private List<Dish> dishes;
+
+    // Getters and Setters
 }

@@ -8,11 +8,10 @@ import it.unical.web.backend.persistence.model.WorkoutPlanAndExercise;
 
 import java.util.List;
 
-public interface ExerciseDAO{
+public interface ExerciseDAO {
+    Exercise getExerciseById(int id);
+    List<Exercise> getAllExercisesByUser(int userId);
     void createExercise(Exercise exercise);
-    List<Exercise> getExercisesByUserId(Long id);
-    void createWorkoutPlan(WorkoutPlan workoutPlan);
-    void addExerciseToWorkoutPlan(WorkoutPlanAndExercise wpaExercise);
-    List<Exercise> getExercisesForWorkoutPlan(long workoutPlanId);
-
+    void updateExercise(Exercise exercise);
+    void deleteExercise(int id);
 }

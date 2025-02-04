@@ -3,22 +3,17 @@ package it.unical.web.backend.persistence.model;
 
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-
-public class WorkoutPlan {
+public class Tag {
     private int id;
+    private Category category;
     private String name;
     private String description;
-    private User createdBy;
-    private List<Exercise> exercises;
 
     // Getters and Setters
 }

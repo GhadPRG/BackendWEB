@@ -1,16 +1,17 @@
 package it.unical.web.backend.persistence.dao;
 
 import it.unical.web.backend.controller.DatabaseConnection;
-import it.unical.web.backend.persistence.dao.DishDAOImpl;
 import it.unical.web.backend.persistence.dao.DAOInterface.MealDAO;
 import it.unical.web.backend.persistence.model.Dish;
 import it.unical.web.backend.persistence.model.Meal;
 import it.unical.web.backend.persistence.model.User;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class MealDAOImpl implements MealDAO {
     private Connection connection= DatabaseConnection.getConnection();
 
@@ -53,14 +54,12 @@ public class MealDAOImpl implements MealDAO {
                 Meal meal = new Meal();
                 meal.setId(rs.getInt("id"));
 
-                User user = new User();
-                user.setId(userId); // Assume the user is already fetched elsewhere
+                User user = new UserDAOImpl().getUserById(rs.getInt("user_id"));
                 meal.setUser(user);
-
                 meal.setMealType(rs.getString("meal_type"));
                 meal.setMealDate(rs.getDate("meal_date").toLocalDate());
 
-                // Fetch dishes for this meal
+
                 meal.setDishes(new DishDAOImpl().getAllDishesByMealId(meal.getId()));
 
                 meals.add(meal);

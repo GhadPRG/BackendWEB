@@ -4,22 +4,13 @@ import it.unical.web.backend.controller.DatabaseConnection;
 import it.unical.web.backend.persistence.dao.DAOInterface.ExerciseDAO;
 import it.unical.web.backend.persistence.model.Exercise;
 import it.unical.web.backend.persistence.model.User;
-import it.unical.web.backend.persistence.model.WorkoutPlan;
-import it.unical.web.backend.persistence.model.WorkoutPlanAndExercise;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.math.BigDecimal;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ExerciseDAOImpl implements ExerciseDAO {
     private Connection connection=DatabaseConnection.getConnection();

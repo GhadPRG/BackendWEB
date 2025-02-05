@@ -1,7 +1,6 @@
 package it.unical.web.backend.persistence.dao.DAOInterface;
 import it.unical.web.backend.persistence.model.User;
 
-import java.util.List;
 
 public interface UserDAO {
     User getUserById(int id);

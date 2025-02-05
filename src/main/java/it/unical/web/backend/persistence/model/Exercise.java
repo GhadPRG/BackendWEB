@@ -1,10 +1,6 @@
 package it.unical.web.backend.persistence.model;
 import lombok.*;
 
-import javax.management.ConstructorParameters;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 @Getter
 @Setter

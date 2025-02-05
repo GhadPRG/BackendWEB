@@ -1,7 +1,6 @@
 package it.unical.web.backend.persistence.model;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.*;
 

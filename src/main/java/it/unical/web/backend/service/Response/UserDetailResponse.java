@@ -1,6 +1,5 @@
 package it.unical.web.backend.service.Response;
 
-import it.unical.web.backend.persistence.model.User;
 import it.unical.web.backend.persistence.model.UserInfo;
 import lombok.Getter;
 import java.time.LocalDate;

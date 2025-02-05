@@ -1,13 +1,9 @@
 package it.unical.web.backend.persistence.model;
 
-import it.unical.web.backend.persistence.dao.DAOInterface.UserDAO;
-import it.unical.web.backend.persistence.dao.UserDAOImpl;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 

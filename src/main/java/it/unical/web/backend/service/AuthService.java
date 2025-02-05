@@ -173,6 +173,7 @@ public class AuthService {
         }
     }
 
+    // TODO: prima di consegnare il backend, toglierlo
     public ResponseEntity<?> loginForTest(){
         JWTResponse t = new JWTResponse(jwtService.generateToken("ScusaGabNonVolevoFarePermitAllATutteLeRichieste"));
         return ResponseEntity.ok().body(t);

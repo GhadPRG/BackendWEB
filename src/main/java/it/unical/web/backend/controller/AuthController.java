@@ -23,6 +23,7 @@ public class AuthController {
         return authService.login(authRequest);
     }
 
+    // TODO: prima di consegnare il backend, toglierlo
     @PostMapping("/api/loginTest")
     public ResponseEntity<?> loginTest() {
         return authService.loginForTest();

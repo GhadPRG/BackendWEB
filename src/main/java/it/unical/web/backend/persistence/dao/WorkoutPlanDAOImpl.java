@@ -5,13 +5,13 @@ import it.unical.web.backend.persistence.dao.DAOInterface.WorkoutPlanDAO;
 import it.unical.web.backend.persistence.model.Exercise;
 import it.unical.web.backend.persistence.model.User;
 import it.unical.web.backend.persistence.model.WorkoutPlan;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.*;
 
 public class WorkoutPlanDAOImpl implements WorkoutPlanDAO {
-    private Connection connection= DatabaseConnection.getConnection();
+    private Connection connection = DatabaseConnection.getConnection();
 
     @Override
     public WorkoutPlan getWorkoutPlanById(int id) {
@@ -32,7 +32,6 @@ public class WorkoutPlanDAOImpl implements WorkoutPlanDAO {
 
                 // Fetch exercises associated with this workout plan
                 workoutPlan.setExercises(getExercisesByWorkoutPlanId(id));
-
                 return workoutPlan;
             }
         } catch (SQLException e) {
@@ -61,7 +60,6 @@ public class WorkoutPlanDAOImpl implements WorkoutPlanDAO {
 
                 // Fetch exercises associated with this workout plan
                 workoutPlan.setExercises(getExercisesByWorkoutPlanId(workoutPlan.getId()));
-
                 workoutPlans.add(workoutPlan);
             }
         } catch (SQLException e) {
@@ -78,7 +76,6 @@ public class WorkoutPlanDAOImpl implements WorkoutPlanDAO {
             stmt.setString(2, workoutPlan.getDescription());
             stmt.setInt(3, workoutPlan.getCreatedBy().getId());
             stmt.executeUpdate();
-
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
                 workoutPlan.setId(rs.getInt(1));
@@ -90,6 +87,7 @@ public class WorkoutPlanDAOImpl implements WorkoutPlanDAO {
 
     @Override
     public void updateWorkoutPlan(WorkoutPlan workoutPlan) {
+        // Update the main workout plan data
         String query = "UPDATE workout_plans SET name = ?, description = ?, created_by = ? WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, workoutPlan.getName());
@@ -100,12 +98,16 @@ public class WorkoutPlanDAOImpl implements WorkoutPlanDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        // Sync the associated exercises
+        syncExercisesForWorkoutPlan(workoutPlan);
     }
 
     @Override
     public void deleteWorkoutPlan(int id) {
-        String query = "DELETE FROM workout_plans WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        // Delete the workout plan itself
+        String deleteWorkoutPlanQuery = "DELETE FROM workout_plans WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(deleteWorkoutPlanQuery)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -137,6 +139,40 @@ public class WorkoutPlanDAOImpl implements WorkoutPlanDAO {
         }
     }
 
+
+//    private void syncExercisesForWorkoutPlan(WorkoutPlan workoutPlan) {
+//        int workoutPlanId = workoutPlan.getId();
+//        List<Exercise> currentExercises = getExercisesByWorkoutPlanId(workoutPlanId);
+//
+//        // Get IDs of currently associated exercises
+//        Set<Long> currentExerciseIds = currentExercises.stream()
+//                .map(Exercise::getId)
+//                .collect(Collectors.toSet());
+//
+//        // Get IDs of exercises to associate
+//        Set<Long> newExerciseIds = workoutPlan.getExercises().stream()
+//                .map(Exercise::getId)
+//                .collect(Collectors.toSet());
+//
+//        // Find differences
+//        Set<Long> exercisesToRemove = new HashSet<>(currentExerciseIds);
+//        exercisesToRemove.removeAll(newExerciseIds);
+//
+//        Set<Long> exercisesToAdd = new HashSet<>(newExerciseIds);
+//        exercisesToAdd.removeAll(currentExerciseIds);
+//
+//        // Remove obsolete associations
+//        for (Long exerciseId : exercisesToRemove) {
+//            removeExerciseFromWorkoutPlan(workoutPlanId, exerciseId);
+//        }
+//
+//        // Add new associations
+//        for (Long exerciseId : exercisesToAdd) {
+//            addExerciseToWorkoutPlan(workoutPlanId, exerciseId);
+//        }
+//    }
+
+
     private List<Exercise> getExercisesByWorkoutPlanId(int workoutPlanId) {
         List<Exercise> exercises = new ArrayList<>();
         String query = "SELECT e.* FROM exercises e " +
@@ -147,7 +183,7 @@ public class WorkoutPlanDAOImpl implements WorkoutPlanDAO {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Exercise exercise = new Exercise();
-                exercise.setId(rs.getInt("id"));
+                exercise.setId(rs.getLong("id"));
                 exercise.setName(rs.getString("name"));
                 exercise.setNotes(rs.getString("notes"));
                 exercise.setMuscleGroup(rs.getString("muscle_group"));

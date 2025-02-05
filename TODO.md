@@ -78,7 +78,7 @@ Esempio JSON:
     "weight": 100
 }
 ```
-
+- `DELETE /api/exercises/{id}`: Restituisce esito operazione.
 
 ExerciseInfo: GET, tutti i valori -> Da mostrare per Scegliere che esercizio registrare;
 Exercise:   GET, tutti i valori -> Per avere informazioni sugli esercizi gia' fatti;

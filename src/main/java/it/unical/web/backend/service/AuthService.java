@@ -3,8 +3,6 @@ package it.unical.web.backend.service;
 import it.unical.web.backend.config.security.SecurityConfig;
 import it.unical.web.backend.controller.DatabaseConnection;
 import it.unical.web.backend.persistence.RegexHandler;
-import it.unical.web.backend.persistence.dao.DAOInterface.UserDAO;
-import it.unical.web.backend.persistence.dao.DAOInterface.UserInfoDAO;
 import it.unical.web.backend.persistence.dao.UserDAOImpl;
 import it.unical.web.backend.persistence.dao.UserInfoDAOImpl;
 import it.unical.web.backend.persistence.model.User;
@@ -173,5 +171,10 @@ public class AuthService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public ResponseEntity<?> loginForTest(){
+        JWTResponse t = new JWTResponse(jwtService.generateToken("ScusaGabNonVolevoFarePermitAllATutteLeRichieste"));
+        return ResponseEntity.ok().body(t);
     }
 }

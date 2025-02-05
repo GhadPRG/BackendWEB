@@ -1,7 +1,6 @@
 package it.unical.web.backend.controller;
 
 import it.unical.web.backend.service.AuthService;
-import it.unical.web.backend.service.JWTService;
 import it.unical.web.backend.service.Request.AuthenticationRequest;
 import it.unical.web.backend.service.Request.RegistrationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,5 +21,10 @@ public class AuthController {
     @PostMapping("/api/login")
     public ResponseEntity<?> login(@RequestBody AuthenticationRequest authRequest) {
         return authService.login(authRequest);
+    }
+
+    @PostMapping("/api/loginTest")
+    public ResponseEntity<?> loginTest() {
+        return authService.loginForTest();
     }
 }

@@ -16,10 +16,11 @@ public class ExerciseDAOImpl implements ExerciseDAO {
     private Connection connection=DatabaseConnection.getConnection();
 
     @Override
-    public Exercise getExerciseById(int id) {
-        String query = "SELECT * FROM exercises WHERE id = ?";
+    public Exercise getExerciseById(int id, int idUser) {
+        String query = "SELECT * FROM exercises WHERE id = ? AND created_by = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, id);
+            stmt.setInt(2, idUser);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 Exercise exercise = new Exercise();

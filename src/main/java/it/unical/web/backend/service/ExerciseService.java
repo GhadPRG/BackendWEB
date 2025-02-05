@@ -5,6 +5,7 @@ import it.unical.web.backend.persistence.dao.UserDAOImpl;
 import it.unical.web.backend.persistence.model.Exercise;
 import it.unical.web.backend.persistence.model.User;
 import it.unical.web.backend.service.Request.ExerciseRequest;
+import it.unical.web.backend.service.Response.ExerciseResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -38,6 +39,38 @@ public class ExerciseService {
             } catch (Exception e) {
                 e.printStackTrace();
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"Message\": \"Error creating exercise.\"}");
+            }
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"Message\": \"Unauthorized\"}");
+    }
+
+
+    public ResponseEntity<?> getById(int id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            try {
+                if (id < 0){
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"Message\": \"Id must be positive.\"}");
+                }
+
+                // fetch user id
+                UserDetails userDetails = (UserDetails) auth.getPrincipal();
+                UserDAOImpl userDAO = new UserDAOImpl();
+                int userId = userDAO.getUserByUsername(userDetails.getUsername()).getId();
+
+                // fetch exercise
+                ExerciseDAOImpl exerciseDAO = new ExerciseDAOImpl();
+                Exercise exercise = exerciseDAO.getExerciseById(id, userId);
+
+                if (exercise == null) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"Message\": \"Exercise not found.\"}");
+                }
+
+                return ResponseEntity.ok().body(new ExerciseResponse(exercise));
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"Message\": \"Error fetching exercise.\"}");
             }
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"Message\": \"Unauthorized\"}");

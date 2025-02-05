@@ -46,7 +46,7 @@ public class MealDAOImpl implements MealDAO {
     @Override
     public List<Meal> getAllMealsByUser(int userId) {
         List<Meal> meals = new ArrayList<>();
-        String query = "SELECT * FROM meals WHERE user_id = ?";
+        String query = "SELECT * FROM meals WHERE user_id = ? AND meal_date=CURRENT_DATE";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
@@ -58,8 +58,6 @@ public class MealDAOImpl implements MealDAO {
                 meal.setUser(user);
                 meal.setMealType(rs.getString("meal_type"));
                 meal.setMealDate(rs.getDate("meal_date").toLocalDate());
-
-
                 meal.setDishes(new DishDAOImpl().getAllDishesByMealId(meal.getId()));
 
                 meals.add(meal);
@@ -71,12 +69,11 @@ public class MealDAOImpl implements MealDAO {
     }
 
     @Override
-    public void createMeal(Meal meal) {
-        String query = "INSERT INTO meals (user_id, meal_type, meal_date) VALUES (?, ?, ?)";
+    public int createMeal(Meal meal) {
+        String query = "INSERT INTO meals (user_id, meal_type, meal_date) VALUES (?, ?, CURRENT_DATE) RETURNING id";
         try (PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, meal.getUser().getId());
             stmt.setString(2, meal.getMealType());
-            stmt.setDate(3, Date.valueOf(meal.getMealDate()));
             stmt.executeUpdate();
 
             ResultSet rs = stmt.getGeneratedKeys();
@@ -91,6 +88,7 @@ public class MealDAOImpl implements MealDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return meal.getId();
     }
 
     @Override
@@ -113,13 +111,15 @@ public class MealDAOImpl implements MealDAO {
     }
 
     @Override
-    public void deleteMeal(int id) {
+    public int deleteMeal(int id) {
         String query = "DELETE FROM meals WHERE id = ?";
+        int row=0;
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, id);
-            stmt.executeUpdate();
+            row=stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return row;
     }
 }

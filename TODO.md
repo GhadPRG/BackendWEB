@@ -86,7 +86,7 @@ Exercise:   GET, tutti i valori -> Per avere informazioni sugli esercizi gia' fa
 
 ## Sezione Alimentare
 Meal:   GET, tutti i valori a catena -> Per poter visualizzare i pasti registrati dall'utente; (Fatto)
-        POST / DELETE, tutti i valori -> Per poter salvare/modificare pasti;
+        POST / DELETE, tutti i valori -> Per poter salvare/modificare pasti; 
 
 Dish:   POST, tutti i valori -> Per poter modificare i valori inseriti dall'utente;
 DishInfo: GET, tutti i valori -> Da mostrare per Scegliere che cibo registrare;

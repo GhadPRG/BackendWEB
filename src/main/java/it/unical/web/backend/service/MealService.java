@@ -33,4 +33,13 @@ public class MealService {
         }
         return mealDAO.getAllMealsByUser(userId);
     }
+
+    public int deleteMeal(int mealId) {
+        return mealDAO.deleteMeal(mealId);
+    }
+
+
+    public int createMeal(Meal meal) {
+        return mealDAO.createMeal(meal);
+    }
 }

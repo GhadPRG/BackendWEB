@@ -75,4 +75,40 @@ public class ExerciseService {
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"Message\": \"Unauthorized\"}");
     }
+
+    public ResponseEntity<?> deleteById(int id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            try {
+                if (id < 0){
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"Message\": \"Id must be positive.\"}");
+                }
+
+                // fetch user id
+                UserDetails userDetails = (UserDetails) auth.getPrincipal();
+                UserDAOImpl userDAO = new UserDAOImpl();
+                int userId = userDAO.getUserByUsername(userDetails.getUsername()).getId();
+
+                // check if exercise is created by the author of the request
+                ExerciseDAOImpl exerciseDAO = new ExerciseDAOImpl();
+                if (!exerciseDAO.isCreatedBy(id, userId)) {
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"Message\": \"You can not delete this exercise. You are not the author.\"}");
+                }
+
+
+                // delete exercise
+                if (exerciseDAO.deleteExercise(id)) {
+                    return ResponseEntity.ok().body("{\"Message\": \"Deleted successfully.\"}");
+                }
+                else {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"Message\": \"Exercise not found.\"}");
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"Message\": \"Error fetching exercise.\"}");
+            }
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"Message\": \"Unauthorized\"}");
+    }
 }

@@ -13,5 +13,5 @@ public interface ExerciseDAO {
     List<Exercise> getAllExercisesByUser(int userId);
     void createExercise(Exercise exercise);
     void updateExercise(Exercise exercise);
-    void deleteExercise(int id);
+    boolean deleteExercise(int id);
 }

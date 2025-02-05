@@ -120,13 +120,30 @@ public class ExerciseDAOImpl implements ExerciseDAO {
     }
 
     @Override
-    public void deleteExercise(int id) {
+    public boolean deleteExercise(int id) {
         String query = "DELETE FROM exercises WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, id);
-            stmt.executeUpdate();
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return false;
+    }
+
+    public boolean isCreatedBy(int exerciseId, int userId) {
+        String query = "SELECT COUNT(*) FROM exercises WHERE id = ? AND created_by = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, exerciseId);
+            stmt.setInt(2, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

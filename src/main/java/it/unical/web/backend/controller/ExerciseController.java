@@ -25,4 +25,11 @@ public class ExerciseController {
     public ResponseEntity<?> getExerciseById(@PathVariable("id") int id) {
         return exerciseService.getById(id);
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> deleteExerciseById(@PathVariable("id") int id) {
+        return exerciseService.deleteById(id);
+    }
+
 }

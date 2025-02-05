@@ -1,5 +1,6 @@
 package it.unical.web.backend.service;
 
+import it.unical.web.backend.persistence.dao.UserDAOImpl;
 import it.unical.web.backend.persistence.dao.UserInfoDAOImpl;
 import it.unical.web.backend.persistence.model.UserInfo;
 import it.unical.web.backend.service.Response.UserDetailResponse;
@@ -24,5 +25,18 @@ public class UserService {
             return ResponseEntity.ok().body(response);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"Message\": \"Unauthorized\"}");
+    }
+
+    public int getCurrentUserIdByUsername() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            System.out.println("Sono in getcurrentuser:"+auth.getName());
+            UserDetails userDetails = (UserDetails) auth.getPrincipal();
+
+            UserDAOImpl userDAO = new UserDAOImpl();
+            return userDAO.getUserByUsername(userDetails.getUsername()).getId();
+        }
+
+        throw new IllegalStateException("Utente non autenticato");
     }
 }

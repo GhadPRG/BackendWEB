@@ -64,10 +64,6 @@ public class JWTService {
         return extractExpirationDate(token).before(new Date());
     }
 
-    public boolean validateToken(String token, String username) {
-        System.out.println("Username extracted: " + extractUsername(token));
-        return (username.equals(extractUsername(token)) && !isTokenExpired(token));
-    }
 
     public static String extractToken(HttpServletRequest request) {
         String BEARER_PREFIX = "Bearer ";

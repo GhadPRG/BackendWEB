@@ -1,5 +1,4 @@
 package it.unical.web.backend.persistence.model;
-//Gestisce la relazione molti a molti tra workout e workoutplan
 
 import lombok.*;
 

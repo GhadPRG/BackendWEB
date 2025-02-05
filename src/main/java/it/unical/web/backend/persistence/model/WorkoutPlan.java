@@ -18,6 +18,4 @@ public class WorkoutPlan {
     private String description;
     private User createdBy;
     private List<Exercise> exercises;
-
-    // Getters and Setters
 }

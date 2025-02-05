@@ -18,6 +18,4 @@ public class Exercise {
     private float kcalPerRep;
     private float weight;
     private User createdBy;
-
-    // Getters and Setters
 }

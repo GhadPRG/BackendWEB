@@ -13,6 +13,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class ExerciseService {
 
@@ -44,6 +47,33 @@ public class ExerciseService {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"Message\": \"Unauthorized\"}");
     }
 
+
+    public ResponseEntity<?> getAll() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            try {
+                // fetch user id
+                UserDetails userDetails = (UserDetails) auth.getPrincipal();
+                UserDAOImpl userDAO = new UserDAOImpl();
+                int userId = userDAO.getUserByUsername(userDetails.getUsername()).getId();
+
+                // fetch all exercises
+                ExerciseDAOImpl exerciseDAO = new ExerciseDAOImpl();
+                List<ExerciseResponse> exercises = exerciseDAO.getAllExercisesByUser(userId).stream()
+                        .map(ExerciseResponse::new)
+                        .toList();
+
+                if (!exercises.isEmpty()) {
+                    return ResponseEntity.ok().body(exercises);
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"Message\": \"Error fetching exercise.\"}");
+            }
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"Message\": \"Unauthorized\"}");
+    }
 
     public ResponseEntity<?> getById(int id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

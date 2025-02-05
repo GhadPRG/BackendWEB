@@ -14,6 +14,12 @@ public class ExerciseController {
     @Autowired
     ExerciseService exerciseService;
 
+    @GetMapping()
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> getExercises() {
+        return exerciseService.getAll();
+    }
+
     @PostMapping()
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> createExercise(@RequestBody ExerciseRequest exerciseRequest) {

@@ -32,6 +32,7 @@ public class DishDAOImpl implements DishDAO {
                 dish.setDishInfo(dishInfo);
 
                 dish.setQuantity(rs.getInt("quantity"));
+                dish.setUnit(rs.getString("unit"));
 
                 return dish;
             }
@@ -62,6 +63,7 @@ public class DishDAOImpl implements DishDAO {
                 dish.setDishInfo(dishInfo);
 
                 dish.setQuantity(rs.getInt("quantity"));
+                dish.setUnit(rs.getString("unit"));
 
                 dishes.add(dish);
             }
@@ -73,11 +75,12 @@ public class DishDAOImpl implements DishDAO {
 
     @Override
     public void createDish(Dish dish) {
-        String query = "INSERT INTO dishes (meal_id, dish_info_id, quantity) VALUES (?, ?, ?)";
+        String query = "INSERT INTO dishes (meal_id, dish_info_id, quantity, unit) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, dish.getMeal().getId());
             stmt.setInt(2, dish.getDishInfo().getId());
             stmt.setInt(3, dish.getQuantity());
+            stmt.setString(4, dish.getUnit());
             stmt.executeUpdate();
 
             ResultSet rs = stmt.getGeneratedKeys();
@@ -91,12 +94,13 @@ public class DishDAOImpl implements DishDAO {
 
     @Override
     public void updateDish(Dish dish) {
-        String query = "UPDATE dishes SET meal_id = ?, dish_info_id = ?, quantity = ? WHERE id = ?";
+        String query = "UPDATE dishes SET meal_id = ?, dish_info_id = ?, quantity = ?, unit=? WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, dish.getMeal().getId());
             stmt.setInt(2, dish.getDishInfo().getId());
             stmt.setInt(3, dish.getQuantity());
-            stmt.setInt(4, dish.getId());
+            stmt.setString(4, dish.getUnit());
+            stmt.setInt(5, dish.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

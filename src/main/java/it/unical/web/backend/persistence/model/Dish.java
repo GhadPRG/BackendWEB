@@ -14,6 +14,7 @@ public class Dish {
     private Meal meal;
     private DishInfo dishInfo;
     private int quantity;
+    private String unit;
 
     // Getters and Setters
 }

@@ -14,7 +14,7 @@ public class UserController {
     private UserService userService;
 
 
-    @GetMapping("/api/auth/user")
+    @GetMapping("/api/user")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getUser() {
         return userService.getUserInfo();

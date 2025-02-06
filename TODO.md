@@ -21,7 +21,7 @@ Esempio di JSON:
 }
 ```
 
-- `GET /api/user` (attualmente `/api/auth/user` ma da modificare) : restituisce dati inerenti all'utente.
+- `GET /api/user`: restituisce dati inerenti all'utente.
 
 ## Sezione Sportiva
 

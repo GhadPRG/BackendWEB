@@ -14,7 +14,7 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Permette tutte le rotte
-                        .allowedOrigins("http://localhost:4200") // Permette il frontend Angular
+                        .allowedOrigins("http://localhost:4200", "http://localhost:4200/") // Permette il frontend Angular
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Permette i metodi richiesti
                         .allowedHeaders("*") // Permette tutti gli header
                         .allowCredentials(true); // Permette i cookie, se necessari

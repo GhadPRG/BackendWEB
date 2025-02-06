@@ -14,10 +14,10 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Permette tutte le rotte
-                        .allowedOrigins("http://localhost:4200", "http://localhost:4200/") // Permette il frontend Angular
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Permette i metodi richiesti
+                        .allowedOrigins("http://localhost:4200", "http://localhost:4200/") // Specifica solo l'origine necessaria
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Metodi HTTP permessi
                         .allowedHeaders("*") // Permette tutti gli header
-                        .allowCredentials(true); // Permette i cookie, se necessari
+                        .allowCredentials(true); // Abilita i cookie, se necessari
             }
         };
     }

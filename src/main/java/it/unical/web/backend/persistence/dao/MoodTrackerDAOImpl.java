@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MoodTrackerDAOImpl implements MoodTrackerDAO {
-    private Connection connection= DatabaseConnection.getConnection();
+    private final Connection connection= DatabaseConnection.getInstance().getConnection();
 
     @Override
     public MoodTracker getMoodTrackerById(int id) {

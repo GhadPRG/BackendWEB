@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TagDAOImpl implements TagDAO {
-    private Connection connection= DatabaseConnection.getConnection();
+    private final Connection connection= DatabaseConnection.getInstance().getConnection();
 
     @Override
     public Tag getTagById(int id) {

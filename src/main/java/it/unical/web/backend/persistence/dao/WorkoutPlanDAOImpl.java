@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.*;
 
 public class WorkoutPlanDAOImpl implements WorkoutPlanDAO {
-    private Connection connection = DatabaseConnection.getConnection();
+    private final Connection connection = DatabaseConnection.getInstance().getConnection();
 
     @Override
     public WorkoutPlan getWorkoutPlanById(int id) {

@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public class DishInfoDAOImpl implements DishInfoDAO {
-    private Connection connection= DatabaseConnection.getConnection();
+    private final Connection connection= DatabaseConnection.getInstance().getConnection();
 
     @Override
     public DishInfo getDishInfoById(int id) {

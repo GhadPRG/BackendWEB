@@ -7,7 +7,7 @@ import it.unical.web.backend.persistence.model.User;
 import java.sql.*;
 
 public class UserDAOImpl implements UserDAO {
-    Connection connection= DatabaseConnection.getConnection();
+    final Connection connection= DatabaseConnection.getInstance().getConnection();
 
     public UserDAOImpl(){}
 
@@ -91,7 +91,7 @@ public class UserDAOImpl implements UserDAO {
 
     public boolean isUsernameUnique(String username) {
         String query = "SELECT username FROM \"User\" WHERE username = ?;";
-        try(Connection dbConnection = DatabaseConnection.getConnection(); PreparedStatement statement = dbConnection.prepareStatement(query)) {
+        try(PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, username);
             ResultSet rs = statement.executeQuery();
             return !rs.next();

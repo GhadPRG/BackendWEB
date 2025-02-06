@@ -13,7 +13,7 @@ import java.util.List;
 import java.sql.*;
 
 public class ExerciseDAOImpl implements ExerciseDAO {
-    private Connection connection=DatabaseConnection.getConnection();
+    private final Connection connection=DatabaseConnection.getInstance().getConnection();
 
     @Override
     public Exercise getExerciseById(int id, int idUser) {

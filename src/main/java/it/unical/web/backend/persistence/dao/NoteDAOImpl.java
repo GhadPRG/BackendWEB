@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NoteDAOImpl implements NoteDAO {
-    private Connection connection= DatabaseConnection.getConnection();
+    private final Connection connection= DatabaseConnection.getInstance().getConnection();
 
     @Override
     public Note getNoteById(long id) {

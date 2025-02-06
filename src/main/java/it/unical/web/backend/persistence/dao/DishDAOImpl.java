@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DishDAOImpl implements DishDAO {
-    Connection connection= DatabaseConnection.getConnection();
+    Connection connection= DatabaseConnection.getInstance().getConnection();
 
     @Override
     public Dish getDishById(int id) {

@@ -14,7 +14,7 @@ import java.util.List;
 
 @Repository
 public class MealDAOImpl implements MealDAO {
-    private Connection connection= DatabaseConnection.getConnection();
+    private final Connection connection= DatabaseConnection.getInstance().getConnection();
 
     @Override
     public Meal getMealById(int id) {

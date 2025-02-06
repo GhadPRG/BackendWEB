@@ -95,7 +95,7 @@ public class AuthService {
             if (status == 0) {
                 String username = registrationRequest.getUsername();
                 String email = registrationRequest.getEmail();
-                DatabaseConnection.getConnection();
+                DatabaseConnection.getInstance().getConnection();
                 UserDAOImpl userDao = new UserDAOImpl();
                 UserInfoDAOImpl userInfoDAO = new UserInfoDAOImpl();
 
@@ -155,7 +155,7 @@ public class AuthService {
 
     public ResponseEntity<?> login(AuthenticationRequest authenticationRequest) {
         try {
-            DatabaseConnection.getConnection();
+            DatabaseConnection.getInstance().getConnection();
             UserDAOImpl userDao = new UserDAOImpl();
             User user = userDao.getUserByUsername(authenticationRequest.getUsername());
 
@@ -176,7 +176,7 @@ public class AuthService {
     // TODO: prima di consegnare il backend, toglierlo
     public ResponseEntity<?> loginForTest(){
         try {
-            DatabaseConnection.getConnection();
+            DatabaseConnection.getInstance().getConnection();
             UserDAOImpl userDao = new UserDAOImpl();
             User user = userDao.getUserByUsername("alice");
             JWTResponse t = new JWTResponse(jwtService.generateToken(user.getUsername()));

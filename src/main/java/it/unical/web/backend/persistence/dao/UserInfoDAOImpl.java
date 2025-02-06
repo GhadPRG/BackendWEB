@@ -8,7 +8,7 @@ import it.unical.web.backend.persistence.model.UserInfo;
 import java.sql.*;
 
 public class UserInfoDAOImpl implements UserInfoDAO {
-    private Connection connection = DatabaseConnection.getConnection();
+    private final Connection connection = DatabaseConnection.getInstance().getConnection();
 
     public UserInfo getUserInfoByUsername(String username) {
         String query = "SELECT ui.* " +
@@ -109,7 +109,7 @@ public class UserInfoDAOImpl implements UserInfoDAO {
 
     public boolean isEmailUnique(String email) {
         String query = "SELECT email FROM \"UserInfo\" WHERE email = ?;";
-        try(Connection dbConnection = DatabaseConnection.getConnection(); PreparedStatement statement = dbConnection.prepareStatement(query)) {
+        try(PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, email);
             ResultSet rs = statement.executeQuery();
             return !rs.next();

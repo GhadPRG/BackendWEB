@@ -100,7 +100,7 @@ public class WorkoutPlanDAOImpl implements WorkoutPlanDAO {
         }
 
         // Sync the associated exercises
-        syncExercisesForWorkoutPlan(workoutPlan);
+        //syncExercisesForWorkoutPlan(workoutPlan);
     }
 
     @Override

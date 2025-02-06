@@ -4,11 +4,13 @@ import it.unical.web.backend.controller.DatabaseConnection;
 import it.unical.web.backend.persistence.dao.DAOInterface.DishInfoDAO;
 import it.unical.web.backend.persistence.model.DishInfo;
 import it.unical.web.backend.persistence.model.User;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class DishInfoDAOImpl implements DishInfoDAO {
     private Connection connection= DatabaseConnection.getConnection();
 
@@ -70,8 +72,8 @@ public class DishInfoDAOImpl implements DishInfoDAO {
     }
 
     @Override
-    public void createDishInfo(DishInfo dishInfo) {
-        String query = "INSERT INTO dish_info (nome, kcalories, carbs, proteins, fats, fibers, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    public int createDishInfo(DishInfo dishInfo) {
+        String query = "INSERT INTO dish_info (nome, kcalories, carbs, proteins, fats, fibers, user_id) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id";
         try (PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, dishInfo.getNome());
             stmt.setInt(2, dishInfo.getKcalories());
@@ -89,6 +91,7 @@ public class DishInfoDAOImpl implements DishInfoDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return dishInfo.getId();
     }
 
     @Override
@@ -119,4 +122,6 @@ public class DishInfoDAOImpl implements DishInfoDAO {
             e.printStackTrace();
         }
     }
+
+
 }

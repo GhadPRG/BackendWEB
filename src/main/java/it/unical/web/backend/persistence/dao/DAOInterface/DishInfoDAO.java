@@ -8,7 +8,7 @@ import java.util.List;
 public interface DishInfoDAO {
     DishInfo getDishInfoById(int id);
     List<DishInfo> getAllDishInfosByUser(int userId);
-    void createDishInfo(DishInfo dishInfo);
+    int createDishInfo(DishInfo dishInfo);
     void updateDishInfo(DishInfo dishInfo);
     void deleteDishInfo(int id);
 }

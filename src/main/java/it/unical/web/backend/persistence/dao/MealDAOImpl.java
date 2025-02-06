@@ -8,6 +8,7 @@ import it.unical.web.backend.persistence.model.User;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +50,7 @@ public class MealDAOImpl implements MealDAO {
         String query = "SELECT * FROM meals WHERE user_id = ? AND meal_date=CURRENT_DATE";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, userId);
+            //stmt.setDate(2, Date.valueOf("2025-02-05")); //TODO: Sostituire questa data con la data odierna (togliere il ? da meal_date=? e inserire CURRENT_DATE)
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Meal meal = new Meal();
@@ -68,8 +70,8 @@ public class MealDAOImpl implements MealDAO {
         return meals;
     }
 
-    @Override
-    public int createMeal(Meal meal) {
+
+    public int createMealWithDishes(Meal meal) {
         String query = "INSERT INTO meals (user_id, meal_type, meal_date) VALUES (?, ?, CURRENT_DATE) RETURNING id";
         try (PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, meal.getUser().getId());
@@ -90,6 +92,27 @@ public class MealDAOImpl implements MealDAO {
         }
         return meal.getId();
     }
+
+    @Override
+    public int createMeal(Meal meal) {
+        String query = "INSERT INTO meals (user_id, meal_type, meal_date) VALUES (?, ?, CURRENT_DATE) RETURNING id";
+        try (PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setInt(1, meal.getUser().getId());
+            stmt.setString(2, meal.getMealType());
+            stmt.executeUpdate();
+
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                meal.setId(rs.getInt(1));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return meal.getId();
+    }
+
+
+
 
     @Override
     public void updateMeal(Meal meal) {
@@ -121,5 +144,21 @@ public class MealDAOImpl implements MealDAO {
             e.printStackTrace();
         }
         return row;
+    }
+
+    public int getMealByType(String mealType) {
+        int id=-1;
+        String query="SELECT * FROM meals WHERE meal_type = ? AND meal_date=CURRENT_DATE";
+        try(PreparedStatement stmt=connection.prepareStatement(query)){
+            stmt.setString(1, mealType);
+            ResultSet rs=stmt.executeQuery();
+            if (rs.next()) {
+                id=rs.getInt("id");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return id;
+
     }
 }

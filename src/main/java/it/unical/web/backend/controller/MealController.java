@@ -1,8 +1,12 @@
 package it.unical.web.backend.controller;
 
 
+import it.unical.web.backend.persistence.dao.MealDAOImpl;
 import it.unical.web.backend.persistence.model.Dish;
+import it.unical.web.backend.persistence.model.DishInfo;
 import it.unical.web.backend.persistence.model.Meal;
+import it.unical.web.backend.service.DishInfoService;
+import it.unical.web.backend.service.DishService;
 import it.unical.web.backend.service.MealService;
 import it.unical.web.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +40,7 @@ public class MealController {
 
         // Recupera tutti i pasti per l'utente corrente
         List<Meal> meals = mealService.getAllMeals(userId);
-
+        System.out.println("Meals: " + meals);
         // Crea una mappa per raggruppare i pasti per tipo (Breakfast, Dinner, Lunch)
         Map<String, Map<String, Object>> responseMap = new HashMap<>();
 
@@ -71,7 +76,7 @@ public class MealController {
                 dishes.add(dishMap);
             }
         }
-
+        System.out.println("Meals returned: " + responseMap);
         return new ResponseEntity<>(responseMap, HttpStatus.OK);
     }
 
@@ -105,25 +110,55 @@ public class MealController {
 
     @PostMapping()
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<String> addToMeal(@RequestParam int meal_id,
-                                          @RequestParam int meal_type,
-                                          @RequestParam String name,
-                                          @RequestParam float kcalories,
-                                          @RequestParam float proteins,
-                                          @RequestParam float fats,
-                                          @RequestParam int carbs,
-                                          @RequestParam int fibers,
-                                          @RequestParam int quantity,
-                                          @RequestParam int unit) {
+    public ResponseEntity<String> addToMeal(@RequestBody Map<String, Object> payload) {
+        String meal_type = (String) payload.get("meal_type");
+        String name = (String) payload.get("name");
+        int kcalories = ((Number) payload.get("kcal")).intValue();
+        int proteins = ((Number) payload.get("proteins")).intValue();
+        int fats = ((Number) payload.get("fats")).intValue();
+        int carbs = ((Number) payload.get("carbs")).intValue();
+        int fibers = ((Number) payload.get("fibers")).intValue();
+        int quantity = ((Number) payload.get("quantity")).intValue();
+        String unit = (String) payload.get("unit");
 
 
+        UserService userService = new UserService();
+        int userId = userService.getCurrentUserIdByUsername();
+        //Inserisco gli elementi in dishinfo
+        DishInfo dishInfo=new DishInfo();
+        dishInfo.setNome(name);
+        dishInfo.setKcalories(kcalories);
+        dishInfo.setProteins(proteins);
+        dishInfo.setFats(fats);
+        dishInfo.setCarbs(carbs);
+        dishInfo.setFibers(fibers);
+        dishInfo.setCreatedBy(userService.getUserById(userId));
+        DishInfoService dishInfoService = new DishInfoService();
+        int idDishInfo=dishInfoService.addDishInfo(dishInfo); //Aggiungo il dishinfo nel db e prendo l'id
 
+        //Creo il meal
+        MealDAOImpl mealDAO = new MealDAOImpl();
+        int meal_id=mealDAO.getMealByType(meal_type);
+        Meal meal=new Meal();
+        if(meal_id<0){ //Il pasto non esiste, lo creo
+            meal.setMealType(meal_type);
+            meal.setUser(userService.getUserById(userId));
+            meal.setMealDate(LocalDate.now());
+            meal_id=mealService.createMeal(meal); //Aggiungo il meal nel db e prendo l'id
+        }else{
+            meal=mealDAO.getMealById(meal_id);
+        }
 
+        //Adesso collego il pasto al piatto
+        Dish dish=new Dish();
+        dish.setDishInfo(dishInfo);
+        dish.setMeal(meal);
+        dish.setQuantity(quantity);
+        dish.setUnit(unit);
+
+        DishService dishService = new DishService();
+        dishService.addDish(dish);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
-
-
-
-
 }

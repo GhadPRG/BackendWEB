@@ -9,5 +9,5 @@ public interface MoodTrackerDAO {
     List<MoodTracker> getAllMoodTrackersByUser(int userId);
     void createMoodTracker(MoodTracker moodTracker);
     void updateMoodTracker(MoodTracker moodTracker);
-    void deleteMoodTracker(int id);
+    int deleteMoodTracker(int id);
 }

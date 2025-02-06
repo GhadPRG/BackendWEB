@@ -6,11 +6,13 @@ import it.unical.web.backend.persistence.model.Category;
 import it.unical.web.backend.persistence.model.MoodTracker;
 import it.unical.web.backend.persistence.model.Tag;
 import it.unical.web.backend.persistence.model.User;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class MoodTrackerDAOImpl implements MoodTrackerDAO {
     private final Connection connection= DatabaseConnection.getInstance().getConnection();
 
@@ -77,6 +79,9 @@ public class MoodTrackerDAOImpl implements MoodTrackerDAO {
     public void createMoodTracker(MoodTracker moodTracker) {
         String query = "INSERT INTO mood_tracker (user_id, mood_level, mood_date, notes) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            System.out.println("Creating Mood");
+            System.out.println(moodTracker.toString());
+
             stmt.setInt(1, moodTracker.getUser().getId());
             stmt.setInt(2, moodTracker.getMoodLevel());
             stmt.setDate(3, Date.valueOf(moodTracker.getMoodDate()));
@@ -119,17 +124,19 @@ public class MoodTrackerDAOImpl implements MoodTrackerDAO {
     }
 
     @Override
-    public void deleteMoodTracker(int id) {
+    public int deleteMoodTracker(int id) {
         String query = "DELETE FROM mood_tracker WHERE id = ?";
+        int updateRet = 0;
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, id);
-            stmt.executeUpdate();
+            updateRet = stmt.executeUpdate();
 
             // Remove tags associated with the mood record
             removeTagsFromEntity(id, "mood");
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return updateRet;
     }
 
     private List<Tag> getTagsByEntityIdAndType(int entityId, String entityType) {

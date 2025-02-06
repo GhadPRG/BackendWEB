@@ -44,13 +44,15 @@ public class MoodTrackerController {
 
         int userId = userService.getCurrentUserIdByUsername();
         int moodLevel = (int) payload.get("moodLevel");
-        String note = (String) payload.get("note");
+        String dateString = (String) payload.get("moodDate");
+        LocalDate moodDate = LocalDate.parse(dateString);
+        String notes = (String) payload.get("notes");
 
         MoodTracker moodTracker = new MoodTracker();
         moodTracker.setUser(userService.getUserById(userId));
         moodTracker.setMoodLevel(moodLevel);
-        moodTracker.setNotes(note);
-        moodTracker.setMoodDate(LocalDate.now());
+        moodTracker.setNotes(notes);
+        moodTracker.setMoodDate(moodDate);
 
         moodTrackerService.createMood(moodTracker);
         return new ResponseEntity<>(HttpStatus.CREATED);

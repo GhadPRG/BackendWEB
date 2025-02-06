@@ -38,9 +38,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/login").permitAll()
                         .requestMatchers("/api/register").permitAll()
-                        .requestMatchers("/api/meal").permitAll() //Andrebbe messo authenticated ma non funziona (dc)
-                        .requestMatchers("/api/meal/").permitAll()
-                        .requestMatchers("/api/auth/**").authenticated() // TODO: da togliere
+                        //.requestMatchers("/api/meal").permitAll() //Andrebbe messo authenticated ma non funziona (dc)
+                        //.requestMatchers("/api/meal/").permitAll()
+                        // .requestMatchers("/api/auth/**").authenticated() // TODO: da togliere
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -56,16 +56,16 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200")); // Permette le richieste dal frontend
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Metodi permessi
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type")); // Header permessi
-        configuration.setAllowCredentials(true); // Permette cookie o credenziali condivise
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // Applica la configurazione a tutte le rotte
-        return source;
-    }
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200")); // Permette le richieste dal frontend
+//        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Metodi permessi
+//        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type")); // Header permessi
+//        configuration.setAllowCredentials(true); // Permette cookie o credenziali condivise
+//
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration); // Applica la configurazione a tutte le rotte
+//        return source;
+//    }
 }

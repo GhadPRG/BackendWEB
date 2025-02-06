@@ -31,7 +31,7 @@ public class ExerciseService {
                 Exercise exercise = new Exercise(0, // it can't accept null
                         exerciseRequest.getName(), exerciseRequest.getNotes(),
                         exerciseRequest.getMuscleGroup(), exerciseRequest.getReps(),
-                        exerciseRequest.getSets(), exerciseRequest.getKcalPerRep(),
+                        exerciseRequest.getSets(), exerciseRequest.getMet(),
                         exerciseRequest.getWeight(), user);
 
                 // try to create exercise

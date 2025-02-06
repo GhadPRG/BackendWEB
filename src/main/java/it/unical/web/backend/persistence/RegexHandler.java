@@ -45,6 +45,4 @@ public class RegexHandler {
         String Regex = "^[A-Za-z][A-Za-z0-9_]{3,29}+$";
         return match(Regex, username);
     }
-
-
 }

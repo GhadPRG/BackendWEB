@@ -56,7 +56,7 @@ CREATE TABLE exercises (
     muscle_group VARCHAR(50) NOT NULL CHECK (muscle_group IN ('Back', 'Chest', 'Legs', 'Core', 'Arms', 'Shoulders')),
     reps INTEGER NOT NULL,
     sets INTEGER NOT NULL,
-    kcal_per_rep DECIMAL(5, 2) NOT NULL,
+    met DECIMAL(5, 2) NOT NULL,
     weight DECIMAL(5, 2),
     created_by INTEGER NOT NULL REFERENCES "User"(id) ON DELETE CASCADE
 );

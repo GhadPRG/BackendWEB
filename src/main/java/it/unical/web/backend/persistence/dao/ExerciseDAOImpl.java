@@ -30,7 +30,7 @@ public class ExerciseDAOImpl implements ExerciseDAO {
                 exercise.setMuscleGroup(rs.getString("muscle_group"));
                 exercise.setReps(rs.getInt("reps"));
                 exercise.setSets(rs.getInt("sets"));
-                exercise.setKcalPerRep(rs.getFloat("kcal_per_rep"));
+                exercise.setMet(rs.getFloat("met"));
                 exercise.setWeight(rs.getFloat("weight"));
 
                 // Fetch the user who created the exercise
@@ -61,7 +61,7 @@ public class ExerciseDAOImpl implements ExerciseDAO {
                 exercise.setMuscleGroup(rs.getString("muscle_group"));
                 exercise.setReps(rs.getInt("reps"));
                 exercise.setSets(rs.getInt("sets"));
-                exercise.setKcalPerRep(rs.getFloat("kcal_per_rep"));
+                exercise.setMet(rs.getFloat("met"));
                 exercise.setWeight(rs.getFloat("weight"));
 
                 // Fetch the user who created the exercise
@@ -79,14 +79,14 @@ public class ExerciseDAOImpl implements ExerciseDAO {
 
     @Override
     public void createExercise(Exercise exercise) {
-        String query = "INSERT INTO exercises (name, notes, muscle_group, reps, sets, kcal_per_rep, weight, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO exercises (name, notes, muscle_group, reps, sets, met, weight, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, exercise.getName());
             stmt.setString(2, exercise.getNotes());
             stmt.setString(3, exercise.getMuscleGroup());
             stmt.setInt(4, exercise.getReps());
             stmt.setInt(5, exercise.getSets());
-            stmt.setFloat(6, exercise.getKcalPerRep());
+            stmt.setFloat(6, exercise.getMet());
             stmt.setFloat(7, exercise.getWeight());
             stmt.setInt(8, exercise.getCreatedBy().getId());
             stmt.executeUpdate();
@@ -102,14 +102,14 @@ public class ExerciseDAOImpl implements ExerciseDAO {
 
     @Override
     public void updateExercise(Exercise exercise) {
-        String query = "UPDATE exercises SET name = ?, notes = ?, muscle_group = ?, reps = ?, sets = ?, kcal_per_rep = ?, weight = ?, created_by = ? WHERE id = ?";
+        String query = "UPDATE exercises SET name = ?, notes = ?, muscle_group = ?, reps = ?, sets = ?, met = ?, weight = ?, created_by = ? WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, exercise.getName());
             stmt.setString(2, exercise.getNotes());
             stmt.setString(3, exercise.getMuscleGroup());
             stmt.setInt(4, exercise.getReps());
             stmt.setInt(5, exercise.getSets());
-            stmt.setFloat(6, exercise.getKcalPerRep());
+            stmt.setFloat(6, exercise.getMet());
             stmt.setFloat(7, exercise.getWeight());
             stmt.setInt(8, exercise.getCreatedBy().getId());
             stmt.setFloat(9, exercise.getId());

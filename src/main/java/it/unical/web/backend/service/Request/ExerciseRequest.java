@@ -11,6 +11,6 @@ public class ExerciseRequest {
     private String muscleGroup;
     private int reps;
     private int sets;
-    private float kcalPerRep;
+    private float met;
     private float weight;
 }

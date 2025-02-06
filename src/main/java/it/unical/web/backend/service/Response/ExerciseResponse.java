@@ -13,7 +13,7 @@ public class ExerciseResponse {
     private String muscleGroup;
     private int reps;
     private int sets;
-    private float kcalPerRep;
+    private float met;
     private float weight;
 
     public ExerciseResponse(Exercise exercise) {
@@ -23,7 +23,7 @@ public class ExerciseResponse {
         this.muscleGroup = exercise.getMuscleGroup();
         this.reps = exercise.getReps();
         this.sets = exercise.getSets();
-        this.kcalPerRep = exercise.getKcalPerRep();
+        this.met = exercise.getMet();
         this.weight = exercise.getWeight();
     }
 }

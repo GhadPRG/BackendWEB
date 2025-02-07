@@ -1,13 +1,14 @@
 package it.unical.web.backend.persistence.dao.DAOInterface;
 
 import it.unical.web.backend.persistence.model.Category;
+import it.unical.web.backend.persistence.model.Tag;
 
 import java.util.List;
 
 public interface CategoryDAO {
-    Category getCategoryById(int id);
     List<Category> getAllCategories();
-    void createCategory(Category category);
+    Category getCategoryById(int id);
+    void addCategory(Category category);
     void updateCategory(Category category);
     void deleteCategory(int id);
 }

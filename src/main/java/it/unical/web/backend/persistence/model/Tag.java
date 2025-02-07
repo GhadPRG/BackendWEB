@@ -3,6 +3,8 @@ package it.unical.web.backend.persistence.model;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @ToString
@@ -15,5 +17,5 @@ public class Tag {
     private String name;
     private String description;
 
-    // Getters and Setters
+
 }

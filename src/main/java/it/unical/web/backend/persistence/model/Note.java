@@ -2,6 +2,7 @@ package it.unical.web.backend.persistence.model;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -18,5 +19,13 @@ public class Note {
     private LocalDate createdAt;
     private List<Tag> tags;
 
-    // Getters and Setters
+
+    public List<Integer> tagsToInt() {
+        List<Integer> tagsID = new ArrayList<>();
+        for (Tag tag : this.tags) {
+            tagsID.add(tag.getId());
+        }
+        return tagsID;
+    }
+
 }

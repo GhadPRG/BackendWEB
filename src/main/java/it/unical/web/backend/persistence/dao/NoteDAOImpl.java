@@ -67,6 +67,7 @@ public class NoteDAOImpl implements NoteDAO {
                 // Fetch tags associated with this note
                 note.setTags(getTagsByEntityIdAndType(note.getId(), "note"));
 
+
                 notes.add(note);
             }
         } catch (SQLException e) {
@@ -77,12 +78,12 @@ public class NoteDAOImpl implements NoteDAO {
 
     @Override
     public void createNote(Note note) {
-        String query = "INSERT INTO notes (user_id, title, content, created_at) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO notes (user_id, title, content, created_at) VALUES (?, ?, ?, CURRENT_DATE)";
         try (PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, note.getUser().getId());
             stmt.setString(2, note.getTitle());
             stmt.setString(3, note.getContent());
-            stmt.setDate(4, Date.valueOf(note.getCreatedAt()));
+            //stmt.setDate(4, Date.valueOf(note.getCreatedAt()));
             stmt.executeUpdate();
 
             // Recupera l'ID generato automaticamente
@@ -93,9 +94,11 @@ public class NoteDAOImpl implements NoteDAO {
                 System.err.println("Errore: Nessun ID generato per la nota.");
             }
 
-            // Aggiungi i tag alla nota
+            System.out.println("Tag"+note.getTags());
+            //Aggiungi i tag alla nota
+            TagDAOImpl tagDAO=new TagDAOImpl();
             for (Tag tag : note.getTags()) {
-                addTagToEntity(note.getId(), "note", tag.getId());
+                tagDAO.addTagToEntity(note.getId(), "note", tag.getId());
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -104,19 +107,20 @@ public class NoteDAOImpl implements NoteDAO {
 
     @Override
     public void updateNote(Note note) {
-        String query = "UPDATE notes SET user_id = ?, title = ?, content = ?, created_at = ? WHERE id = ?";
+        String query = "UPDATE notes SET user_id = ?, title = ?, content = ? WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, note.getUser().getId());
             stmt.setString(2, note.getTitle());
             stmt.setString(3, note.getContent());
-            stmt.setDate(4, Date.valueOf(note.getCreatedAt()));
-            stmt.setInt(5, note.getId());
+            //stmt.setDate(4, Date.valueOf(note.getCreatedAt()));
+            stmt.setInt(4, note.getId());
             stmt.executeUpdate();
 
             // Update tags for the note
             removeTagsFromEntity(note.getId(), "note");
+            TagDAOImpl tagDAO=new TagDAOImpl();
             for (Tag tag : note.getTags()) {
-                addTagToEntity(note.getId(), "note", tag.getId());
+                tagDAO.addTagToEntity(note.getId(), "note", tag.getId());
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -163,18 +167,6 @@ public class NoteDAOImpl implements NoteDAO {
             e.printStackTrace();
         }
         return tags;
-    }
-
-    private void addTagToEntity(int entityId, String entityType, int tagId) {
-        String query = "INSERT INTO entity_tags (entity_id, entity_type, tag_id) VALUES (?, ?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setInt(1, entityId);
-            stmt.setString(2, entityType);
-            stmt.setInt(3, tagId);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     private void removeTagsFromEntity(int entityId, String entityType) {

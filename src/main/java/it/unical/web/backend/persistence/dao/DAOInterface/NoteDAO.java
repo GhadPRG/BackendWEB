@@ -7,7 +7,7 @@ import java.util.List;
 public interface NoteDAO {
     Note getNoteById(long id);
     List<Note> getAllNotesByUser(int userId);
-    void createNote(Note note);
+    Note createNote(Note note);
     void updateNote(Note note);
     void deleteNote(int id);
 }

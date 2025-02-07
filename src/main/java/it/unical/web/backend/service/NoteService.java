@@ -15,9 +15,9 @@ public class NoteService {
         return noteDTO.getNoteDTOS(noteDAO.getAllNotesByUser(userService.getCurrentUserIdByUsername()));
     }
 
-    public void addNote(Note note) {
+    public Note addNote(Note note) {
         NoteDAOImpl noteDAO = new NoteDAOImpl();
-        noteDAO.createNote(note);
+        return noteDAO.createNote(note);
     }
 
     public void updateNote(Note note) {

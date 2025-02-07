@@ -77,7 +77,7 @@ public class NoteDAOImpl implements NoteDAO {
     }
 
     @Override
-    public void createNote(Note note) {
+    public Note createNote(Note note) {
         String query = "INSERT INTO notes (user_id, title, content, created_at) VALUES (?, ?, ?, CURRENT_DATE)";
         try (PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, note.getUser().getId());
@@ -103,6 +103,7 @@ public class NoteDAOImpl implements NoteDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return getNoteById(note.getId());
     }
 
     @Override

@@ -22,6 +22,7 @@ public class NoteController {
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<NoteDTO>> getNotes() {
+
         System.out.println("getNotes called");
         NoteService noteService = new NoteService();
         return ResponseEntity.ok(noteService.getNotes());
@@ -29,7 +30,8 @@ public class NoteController {
 
     @PostMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<String> createNote(@RequestBody Map<String, Object> payload) {
+    public ResponseEntity<Note> createNote(@RequestBody Map<String, Object> payload) {
+        System.out.println("cretenote called");
         NoteService noteService = new NoteService();
         Note note = new Note();
         note.setTitle((String) payload.get("title"));
@@ -48,8 +50,8 @@ public class NoteController {
 
         UserService userService = new UserService();
         note.setUser(userService.getUserById(userService.getCurrentUserIdByUsername()));
-        noteService.addNote(note);
-        return ResponseEntity.ok().body("Vamo Raga note Created");
+
+        return ResponseEntity.ok().body(noteService.addNote(note));
     }
 
     @DeleteMapping

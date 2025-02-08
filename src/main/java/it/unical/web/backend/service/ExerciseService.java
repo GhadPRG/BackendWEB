@@ -65,6 +65,9 @@ public class ExerciseService {
                 if (!exercises.isEmpty()) {
                     return ResponseEntity.ok().body(exercises);
                 }
+                else {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"Message\": \"Exercises not found. \"}");
+                }
             }
             catch (Exception e) {
                 e.printStackTrace();

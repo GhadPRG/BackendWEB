@@ -3,6 +3,7 @@ package it.unical.web.backend.persistence.dao;
 import it.unical.web.backend.controller.DatabaseConnection;
 import it.unical.web.backend.persistence.dao.DAOInterface.UserDAO;
 import it.unical.web.backend.persistence.model.User;
+import it.unical.web.backend.persistence.proxy.UserProxy;
 
 import java.sql.*;
 
@@ -18,11 +19,11 @@ public class UserDAOImpl implements UserDAO {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                User user = new User();
-                user.setId(rs.getInt("id"));
-                user.setUsername(rs.getString("username"));
-                user.setPassword(rs.getString("password"));
-                return user;
+                UserProxy proxy = new UserProxy(); // Usa il proxy
+                proxy.setId(rs.getInt("id"));
+                proxy.setUsername(rs.getString("username"));
+                proxy.setPassword(rs.getString("password"));
+                return proxy;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -37,11 +38,11 @@ public class UserDAOImpl implements UserDAO {
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                User user = new User();
-                user.setId(rs.getInt("id"));
-                user.setUsername(rs.getString("username"));
-                user.setPassword(rs.getString("password"));
-                return user;
+                UserProxy proxy = new UserProxy(); // Usa il proxy
+                proxy.setId(rs.getInt("id"));
+                proxy.setUsername(rs.getString("username"));
+                proxy.setPassword(rs.getString("password"));
+                return proxy;
             }
         } catch (SQLException e) {
             e.printStackTrace();

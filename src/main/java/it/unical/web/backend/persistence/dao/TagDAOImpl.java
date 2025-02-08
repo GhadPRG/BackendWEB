@@ -68,6 +68,17 @@ public class TagDAOImpl implements TagDAO {
         }
     }
 
+    public void removeTagsFromEntity(int entityId, String entityType) {
+        String query = "DELETE FROM entity_tags WHERE entity_id = ? AND entity_type = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, entityId);
+            stmt.setString(2, entityType);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public Tag getTagById(int id) {
         String sql = "SELECT t.id AS tag_id, t.name AS tag_name, t.description AS tag_description, " +

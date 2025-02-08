@@ -4,6 +4,7 @@ import it.unical.web.backend.controller.DatabaseConnection;
 import it.unical.web.backend.persistence.dao.DAOInterface.UserInfoDAO;
 import it.unical.web.backend.persistence.model.User;
 import it.unical.web.backend.persistence.model.UserInfo;
+import it.unical.web.backend.persistence.proxy.UserProxy;
 
 import java.sql.*;
 
@@ -50,10 +51,10 @@ public class UserInfoDAOImpl implements UserInfoDAO {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 UserInfo userInfo = new UserInfo();
-                User user = new User();
-                user.setId(userId); // Assume the user is already fetched elsewhere
-                userInfo.setUser(user);
-                userInfo.setFirstName(rs.getString("first_name"));
+                UserProxy userProxy = new UserProxy(); // Usa UserProxy invece di User
+                userProxy.setId(userId);
+                userInfo.setUser(userProxy);
+userInfo.setFirstName(rs.getString("first_name"));
                 userInfo.setLastName(rs.getString("last_name"));
                 userInfo.setEmail(rs.getString("email"));
                 userInfo.setBirth(rs.getDate("birth").toLocalDate());

@@ -5,10 +5,11 @@ import it.unical.web.backend.persistence.dao.DAOInterface.MealDAO;
 import it.unical.web.backend.persistence.model.Dish;
 import it.unical.web.backend.persistence.model.Meal;
 import it.unical.web.backend.persistence.model.User;
+import it.unical.web.backend.persistence.proxy.MealProxy;
+import it.unical.web.backend.persistence.proxy.UserProxy;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +34,6 @@ public class MealDAOImpl implements MealDAO {
                 meal.setMealType(rs.getString("meal_type"));
                 meal.setMealDate(rs.getDate("meal_date").toLocalDate());
 
-                // Fetch dishes for this meal
                 meal.setDishes(new DishDAOImpl().getAllDishesByMealId(id));
 
                 return meal;
@@ -50,19 +50,19 @@ public class MealDAOImpl implements MealDAO {
         String query = "SELECT * FROM meals WHERE user_id = ? AND meal_date=CURRENT_DATE";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, userId);
-            //stmt.setDate(2, Date.valueOf("2025-02-05")); //TODO: Sostituire questa data con la data odierna (togliere il ? da meal_date=? e inserire CURRENT_DATE)
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                Meal meal = new Meal();
-                meal.setId(rs.getInt("id"));
+                MealProxy mealProxy = new MealProxy();
+                mealProxy.setId(rs.getInt("id"));
 
-                User user = new UserDAOImpl().getUserById(rs.getInt("user_id"));
-                meal.setUser(user);
-                meal.setMealType(rs.getString("meal_type"));
-                meal.setMealDate(rs.getDate("meal_date").toLocalDate());
-                meal.setDishes(new DishDAOImpl().getAllDishesByMealId(meal.getId()));
+                UserProxy userProxy = new UserProxy();
+                userProxy.setId(rs.getInt("user_id")); // Solo l'ID, senza caricare altri dati
+                mealProxy.setUser(userProxy);
 
-                meals.add(meal);
+                mealProxy.setMealType(rs.getString("meal_type"));
+                mealProxy.setMealDate(rs.getDate("meal_date").toLocalDate());
+
+                meals.add(mealProxy);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -83,8 +83,8 @@ public class MealDAOImpl implements MealDAO {
                 meal.setId(rs.getInt(1));
             }
 
-            // Insert dishes for this meal
             for (Dish dish : meal.getDishes()) {
+                System.out.println("Dish id:"+dish.getId());
                 new DishDAOImpl().createDish(dish);
             }
         } catch (SQLException e) {
@@ -103,12 +103,14 @@ public class MealDAOImpl implements MealDAO {
 
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
-                meal.setId(rs.getInt(1));
+                int generatedId = rs.getInt(1);
+                meal.setId(generatedId);
+                return generatedId;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return meal.getId();
+        return -1;
     }
 
 
@@ -124,7 +126,6 @@ public class MealDAOImpl implements MealDAO {
             stmt.setInt(4, meal.getId());
             stmt.executeUpdate();
 
-            // Update dishes for this meal
             for (Dish dish : meal.getDishes()) {
                 new DishDAOImpl().updateDish(dish);
             }
@@ -147,18 +148,16 @@ public class MealDAOImpl implements MealDAO {
     }
 
     public int getMealByType(String mealType) {
-        int id=-1;
-        String query="SELECT * FROM meals WHERE meal_type = ? AND meal_date=CURRENT_DATE";
-        try(PreparedStatement stmt=connection.prepareStatement(query)){
+        String query = "SELECT id FROM meals WHERE meal_type = ? AND meal_date = CURRENT_DATE";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, mealType);
-            ResultSet rs=stmt.executeQuery();
+            ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                id=rs.getInt("id");
+                return rs.getInt("id");
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
-        return id;
-
+        return -1;
     }
 }

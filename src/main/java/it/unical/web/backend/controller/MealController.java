@@ -5,6 +5,7 @@ import it.unical.web.backend.persistence.dao.MealDAOImpl;
 import it.unical.web.backend.persistence.model.Dish;
 import it.unical.web.backend.persistence.model.DishInfo;
 import it.unical.web.backend.persistence.model.Meal;
+import it.unical.web.backend.persistence.proxy.MealProxy;
 import it.unical.web.backend.service.DishInfoService;
 import it.unical.web.backend.service.DishService;
 import it.unical.web.backend.service.MealService;
@@ -36,51 +37,50 @@ public class MealController {
     public ResponseEntity<Map<String, Map<String, Object>>> getMeals() {
         UserService userService = new UserService();
         int userId = userService.getCurrentUserIdByUsername();
-        System.out.println("UserID: " + userId);
 
-        // Recupera tutti i pasti per l'utente corrente
         List<Meal> meals = mealService.getAllMeals(userId);
-        System.out.println("Meals: " + meals);
-        // Crea una mappa per raggruppare i pasti per tipo (Breakfast, Dinner, Lunch)
+
         Map<String, Map<String, Object>> responseMap = new HashMap<>();
 
         for (Meal meal : meals) {
             String mealType = meal.getMealType();
 
-            // Se il tipo di pasto non è già nella mappa, inizializzalo
             if (!responseMap.containsKey(mealType)) {
                 Map<String, Object> mealData = new HashMap<>();
-                mealData.put("id", meal.getId()); // Aggiungi meal_id
+                mealData.put("id", meal.getId());
                 mealData.put("type", mealType);
                 mealData.put("dishes", new ArrayList<Map<String, Object>>());
                 responseMap.put(mealType, mealData);
             }
 
-            // Ottieni la lista dei piatti per questo tipo di pasto
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> dishes = (List<Map<String, Object>>) responseMap.get(mealType).get("dishes");
+            List<Dish> dishes = meal.getDishes();
 
-            // Aggiungi ogni piatto alla lista
-            for (Dish dish : meal.getDishes()) {
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> dishList = (List<Map<String, Object>>) responseMap.get(mealType).get("dishes");
+
+            for (Dish dish : dishes) {
+                // Il DishInfo viene caricato LAZY qui (dish.getDishInfo() chiama il proxy)
+                DishInfo dishInfo = dish.getDishInfo();
+
                 Map<String, Object> dishMap = new HashMap<>();
-                dishMap.put("unit", normalizeUnit(dish.getUnit())); // Normalizza l'unità di misura
+                dishMap.put("unit", normalizeUnit(dish.getUnit()));
                 dishMap.put("quantity", dish.getQuantity());
                 dishMap.put("dishInfo", Map.of(
-                        "name", dish.getDishInfo().getNome(),
-                        "kcalories", dish.getDishInfo().getKcalories(),
-                        "proteins", dish.getDishInfo().getProteins(),
-                        "fats", dish.getDishInfo().getFats(),
-                        "carbs", dish.getDishInfo().getCarbs(),
-                        "fibers", dish.getDishInfo().getFibers()
+                        "name", dishInfo.getNome(),
+                        "kcalories", dishInfo.getKcalories(),
+                        "proteins", dishInfo.getProteins(),
+                        "fats", dishInfo.getFats(),
+                        "carbs", dishInfo.getCarbs(),
+                        "fibers", dishInfo.getFibers()
                 ));
-                dishes.add(dishMap);
+
+                dishList.add(dishMap);
             }
         }
-        System.out.println("Meals returned: " + responseMap);
+
         return new ResponseEntity<>(responseMap, HttpStatus.OK);
     }
 
-    // Metodo per normalizzare le unità di misura
     private String normalizeUnit(String unit) {
         switch (unit.toLowerCase()) {
             case "oz":
@@ -136,21 +136,27 @@ public class MealController {
         DishInfoService dishInfoService = new DishInfoService();
         int idDishInfo=dishInfoService.addDishInfo(dishInfo); //Aggiungo il dishinfo nel db e prendo l'id
 
-        //Creo il meal
         MealDAOImpl mealDAO = new MealDAOImpl();
-        int meal_id=mealDAO.getMealByType(meal_type);
-        Meal meal=new Meal();
-        if(meal_id<0){ //Il pasto non esiste, lo creo
-            meal.setMealType(meal_type);
-            meal.setUser(userService.getUserById(userId));
-            meal.setMealDate(LocalDate.now());
-            meal_id=mealService.createMeal(meal); //Aggiungo il meal nel db e prendo l'id
-        }else{
-            meal=mealDAO.getMealById(meal_id);
+        int meal_id = mealDAO.getMealByType(meal_type);
+
+        if (meal_id < 0) {
+            // Crea un nuovo MealProxy e assegna i dati
+            MealProxy mealProxy = new MealProxy();
+            mealProxy.setMealType(meal_type);
+            mealProxy.setUser(userService.getUserById(userId));
+            mealProxy.setMealDate(LocalDate.now());
+
+            // Inserisce il pasto e ottieni l'ID generato
+            meal_id = mealDAO.createMeal(mealProxy);
+
+            if (meal_id == -1) {
+                return new ResponseEntity<>("Errore nella creazione del pasto", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
 
-        //Adesso collego il pasto al piatto
-        Dish dish=new Dish();
+        Meal meal = mealDAO.getMealById(meal_id);
+
+        Dish dish = new Dish();
         dish.setDishInfo(dishInfo);
         dish.setMeal(meal);
         dish.setQuantity(quantity);

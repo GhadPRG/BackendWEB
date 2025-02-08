@@ -53,6 +53,7 @@ public class MoodTrackerController {
         moodTracker.setMoodLevel(moodLevel);
         moodTracker.setNotes(notes);
         moodTracker.setMoodDate(moodDate);
+        moodTracker.setTags(List.of());
 
         moodTrackerService.createMood(moodTracker);
         return new ResponseEntity<>(HttpStatus.CREATED);

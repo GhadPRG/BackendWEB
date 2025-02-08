@@ -42,6 +42,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/meal").authenticated() // Richiede autenticazione
                         .requestMatchers("/api/calendar").authenticated()
                         .requestMatchers("/api/notes").authenticated()
+                        .requestMatchers("/api/exercises").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

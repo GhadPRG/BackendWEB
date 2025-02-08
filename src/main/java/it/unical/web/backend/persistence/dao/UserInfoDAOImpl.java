@@ -51,10 +51,11 @@ public class UserInfoDAOImpl implements UserInfoDAO {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 UserInfo userInfo = new UserInfo();
-                UserProxy userProxy = new UserProxy(); // Usa UserProxy invece di User
-                userProxy.setId(userId);
-                userInfo.setUser(userProxy);
-userInfo.setFirstName(rs.getString("first_name"));
+// Crea un oggetto User "base" senza Proxy
+                User user = new User();
+                user.setId(userId); // Imposta solo l'ID necessario
+                userInfo.setUser(user); // Non usa un Proxy
+                userInfo.setFirstName(rs.getString("first_name"));
                 userInfo.setLastName(rs.getString("last_name"));
                 userInfo.setEmail(rs.getString("email"));
                 userInfo.setBirth(rs.getDate("birth").toLocalDate());

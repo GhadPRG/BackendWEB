@@ -78,7 +78,7 @@ CREATE TABLE exercises (
                            muscle_group character varying(50) NOT NULL,
                            reps integer NOT NULL,
                            sets integer NOT NULL,
-                           kcal_per_rep numeric(5,2) NOT NULL,
+                           met numeric(5,2) NOT NULL,
                            weight numeric(5,2),
                            created_by integer NOT NULL,
                            CONSTRAINT exercises_muscle_group_check CHECK (((muscle_group)::text = ANY ((ARRAY['Back'::character varying, 'Chest'::character varying, 'Legs'::character varying, 'Core'::character varying, 'Arms'::character varying, 'Shoulders'::character varying])::text[])))

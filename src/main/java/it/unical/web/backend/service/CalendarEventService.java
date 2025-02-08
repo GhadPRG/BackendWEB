@@ -28,5 +28,10 @@ public class CalendarEventService {
         calendarEventDAO.deleteEvent(id);
     }
 
+    public void updateEvent(CalendarEvent calendarEvent) {
+        CalendarEventDAOImpl calendarEventDAO=new CalendarEventDAOImpl();
+        calendarEventDAO.updateEvent(calendarEvent);
+    }
+
 
 }

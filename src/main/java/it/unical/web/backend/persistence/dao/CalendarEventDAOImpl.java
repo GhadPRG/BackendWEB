@@ -57,6 +57,24 @@ public class CalendarEventDAOImpl implements CalendarEventDAO {
             stmt.setTimestamp(6, Timestamp.valueOf(event.getEnd()));
             stmt.setInt(7, event.getId());
 
+
+
+
+            // Recupera l'ID generato automaticamente
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    event.setId(generatedKeys.getInt(1));
+                }
+            }
+
+            TagDAOImpl tagDAO = new TagDAOImpl();
+
+            //Devo prima eliminare i tag associati a quell'evento:
+            tagDAO.removeTagsFromEntity(event.getId(), "calendar_event");
+            for (Tag tag : event.getTags()) {
+                tagDAO.addTagToEntity(event.getId(), "calendar_event", tag.getId());
+            }
+
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected == 0) {
                 throw new RuntimeException("Nessun evento trovato con ID: " + event.getId());

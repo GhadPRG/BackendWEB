@@ -12,7 +12,6 @@ public class DishProxy extends Dish {
     @Override
     public DishInfo getDishInfo() {
         if (!dishInfoLoaded) {
-            System.out.println("Sono dentro dishproxy");
             DishInfo dishInfo = new DishInfoDAOImpl().getDishInfoById(super.getDishInfo().getId());
             super.setDishInfo(dishInfo);
             dishInfoLoaded = true;

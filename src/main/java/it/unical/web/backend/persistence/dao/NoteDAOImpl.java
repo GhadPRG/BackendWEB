@@ -16,7 +16,6 @@ public class NoteDAOImpl implements NoteDAO {
 
     @Override
     public Note getNoteById(long id) {
-        System.out.println("getNoteById, cerco note per utente"+id);
         String query = "SELECT * FROM notes WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setLong(1, id);
@@ -28,7 +27,6 @@ public class NoteDAOImpl implements NoteDAO {
                 note.setContent(rs.getString("content"));
                 note.setCreatedAt(rs.getDate("created_at").toLocalDate());
 
-                System.out.println("Sono dentro if");
                 // Fetch the user who created the note
                 User user = new User();
                 user.setId(rs.getInt("user_id")); // Assume the user is already fetched elsewhere
@@ -94,7 +92,6 @@ public class NoteDAOImpl implements NoteDAO {
                 System.err.println("Errore: Nessun ID generato per la nota.");
             }
 
-            System.out.println("Tag"+note.getTags());
             //Aggiungi i tag alla nota
             TagDAOImpl tagDAO=new TagDAOImpl();
             for (Tag tag : note.getTags()) {

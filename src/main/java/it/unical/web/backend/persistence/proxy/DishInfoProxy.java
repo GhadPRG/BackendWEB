@@ -11,7 +11,6 @@ public class DishInfoProxy extends DishInfo {
     @Override
     public User getCreatedBy() {
         if (!createdByLoaded) {
-            System.out.println("Sono dentro dishinfoproxy");
             User user = new UserDAOImpl().getUserById(super.getCreatedBy().getId());
             super.setCreatedBy(user);
             createdByLoaded = true;

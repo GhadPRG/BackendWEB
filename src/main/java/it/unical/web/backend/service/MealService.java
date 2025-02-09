@@ -21,13 +21,6 @@ public class MealService {
     }
 
     public List<Meal> getAllMeals(int userId) {
-        List<Meal> meal= mealDAO.getAllMealsByUser(userId);
-        for(Meal m: meal){
-            System.out.println("Meal Type: "+m.getMealType()+" mealDate: "+m.getMealDate());
-            for(Dish d: m.getDishes()){
-                System.out.println(" Quantità:"+d.getQuantity()+" Info Piatto: "+d.getDishInfo());
-            }
-        }
         return mealDAO.getAllMealsByUser(userId);
     }
 

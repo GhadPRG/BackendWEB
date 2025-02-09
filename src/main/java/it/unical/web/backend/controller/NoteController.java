@@ -23,7 +23,6 @@ public class NoteController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<NoteDTO>> getNotes() {
 
-        System.out.println("getNotes called");
         NoteService noteService = new NoteService();
         return ResponseEntity.ok(noteService.getNotes());
     }
@@ -31,7 +30,7 @@ public class NoteController {
     @PostMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Note> createNote(@RequestBody Map<String, Object> payload) {
-        System.out.println("cretenote called");
+
         NoteService noteService = new NoteService();
         Note note = new Note();
         note.setTitle((String) payload.get("title"));
@@ -39,7 +38,6 @@ public class NoteController {
         //note.setCreatedAt((LocalDateTime) payload.get("created_at")); Lo ignoro, va aggiunto in caso di necessità
 
         List<Integer> tags = (List<Integer>) payload.get("tags");
-        System.out.println("Tags:"+tags);
         List<Tag> tagforNote = new ArrayList<>();
         for(Integer t : tags) {
             Tag tag = new Tag();
@@ -58,7 +56,6 @@ public class NoteController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> deleteNote(@RequestParam int id) {
         NoteService noteService = new NoteService();
-        System.out.println("Id delete:"+id);
         noteService.deleteNote(id);
         return ResponseEntity.ok().body("Vamo Raga note Deleted");
     }
@@ -72,7 +69,6 @@ public class NoteController {
         note.setTitle((String) payload.get("title"));
         note.setContent((String) payload.get("content"));
         List<Integer> tags = (List<Integer>) payload.get("tags");
-        System.out.println("Tags:"+tags);
         List<Tag> tagforNote = new ArrayList<>();
         for(Integer t : tags) {
             Tag tag = new Tag();
@@ -82,7 +78,6 @@ public class NoteController {
         note.setTags(tagforNote);
         UserService userService = new UserService();
         note.setUser(userService.getUserById(userService.getCurrentUserIdByUsername()));
-        System.out.println("Id update:"+note.getId());
         noteService.updateNote(note);
         return ResponseEntity.ok().body("Vamo Raga note Updated");
     }

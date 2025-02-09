@@ -84,7 +84,6 @@ public class MealDAOImpl implements MealDAO {
             }
 
             for (Dish dish : meal.getDishes()) {
-                System.out.println("Dish id:"+dish.getId());
                 new DishDAOImpl().createDish(dish);
             }
         } catch (SQLException e) {
@@ -147,10 +146,11 @@ public class MealDAOImpl implements MealDAO {
         return row;
     }
 
-    public int getMealByType(String mealType) {
-        String query = "SELECT id FROM meals WHERE meal_type = ? AND meal_date = CURRENT_DATE";
+    public int getMealByType(String mealType, int user_id) {
+        String query = "SELECT id FROM meals WHERE meal_type = ? AND meal_date = CURRENT_DATE AND user_id=?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, mealType);
+            stmt.setInt(2, user_id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return rs.getInt("id");

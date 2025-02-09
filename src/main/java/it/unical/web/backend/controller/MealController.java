@@ -133,12 +133,11 @@ public class MealController {
         dishInfo.setCarbs(carbs);
         dishInfo.setFibers(fibers);
         dishInfo.setCreatedBy(userService.getUserById(userId));
+
         DishInfoService dishInfoService = new DishInfoService();
         int idDishInfo=dishInfoService.addDishInfo(dishInfo); //Aggiungo il dishinfo nel db e prendo l'id
-
         MealDAOImpl mealDAO = new MealDAOImpl();
-        int meal_id = mealDAO.getMealByType(meal_type);
-
+        int meal_id = mealDAO.getMealByType(meal_type, userId);
         if (meal_id < 0) {
             // Crea un nuovo MealProxy e assegna i dati
             MealProxy mealProxy = new MealProxy();
@@ -148,13 +147,13 @@ public class MealController {
 
             // Inserisce il pasto e ottieni l'ID generato
             meal_id = mealDAO.createMeal(mealProxy);
-
             if (meal_id == -1) {
                 return new ResponseEntity<>("Errore nella creazione del pasto", HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
 
         Meal meal = mealDAO.getMealById(meal_id);
+
 
         Dish dish = new Dish();
         dish.setDishInfo(dishInfo);

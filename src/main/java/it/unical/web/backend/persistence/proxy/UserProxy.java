@@ -12,7 +12,6 @@ public class UserProxy extends User {
     @Override
     public UserInfo getUserInfo() {
         if (!userInfoLoaded) {
-            System.out.println("Sono dentro Userproxy");
             UserInfoDAO userInfoDAO = new UserInfoDAOImpl();
             UserInfo userInfo = userInfoDAO.getUserInfoByUserId(this.getId());
             super.setUserInfo(userInfo);

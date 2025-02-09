@@ -79,8 +79,7 @@ public class MoodTrackerDAOImpl implements MoodTrackerDAO {
     public void createMoodTracker(MoodTracker moodTracker) {
         String query = "INSERT INTO mood_tracker (user_id, mood_level, mood_date, notes) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-            System.out.println("Creating Mood");
-            System.out.println(moodTracker.toString());
+
 
             stmt.setInt(1, moodTracker.getUser().getId());
             stmt.setInt(2, moodTracker.getMoodLevel());

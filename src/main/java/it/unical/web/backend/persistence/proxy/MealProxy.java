@@ -13,7 +13,6 @@ public class MealProxy extends Meal {
     @Override
     public List<Dish> getDishes() {
         if (!dishesLoaded) {
-            System.out.println("Sono dentro mealproxy");
             super.setDishes(new DishDAOImpl().getAllDishesByMealId(this.getId()));
             dishesLoaded = true;
         }

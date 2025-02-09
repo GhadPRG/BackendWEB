@@ -97,7 +97,6 @@ public class UserDAOImpl implements UserDAO {
             ResultSet rs = statement.executeQuery();
             return !rs.next();
         }catch (SQLException e){
-            System.out.println("Eccezione in isUsernameUnique(UserDAO)");
             throw new RuntimeException(e);
         }
     }

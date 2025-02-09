@@ -25,7 +25,6 @@ public class CalendarEventDAOImpl implements CalendarEventDAO {
             stmt.setTimestamp(5, Timestamp.valueOf(event.getStart()));
 
             stmt.setTimestamp(6, Timestamp.valueOf(event.getEnd()));
-            System.out.println("Date: "+event.getStart()+" "+event.getEnd());
             stmt.executeUpdate();
 
             // Recupera l'ID generato automaticamente

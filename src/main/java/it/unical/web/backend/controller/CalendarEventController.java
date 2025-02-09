@@ -57,10 +57,8 @@ public class CalendarEventController {
         String startDateString = (String) payload.get("start");
         String endDateString = (String) payload.get("end");
 
-        System.out.println("Start: " + startDateString + " End: " + endDateString);
 
         List<Integer> tags = (List<Integer>) payload.get("tags");
-        System.out.println("Tags:"+tags);
         List<Tag> tagforNote = new ArrayList<>();
         for(Integer t : tags) {
             Tag tag = new Tag();
@@ -81,7 +79,6 @@ public class CalendarEventController {
 
         calendarEventService.addEvent(calendarEvent);
 
-        System.out.println("Calendar: "+calendarEvent.toString());
         return ResponseEntity.ok().body(calendarEvent.toString());
     }
 
@@ -96,7 +93,6 @@ public class CalendarEventController {
     @PutMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> updateCalendarEvent(@RequestBody Map<String, Object> payload) {
-        System.out.println("Sono in updateCalendarEvent");
         UserService userService = new UserService();
         CalendarEvent calendarEvent = new CalendarEvent();
         int userId = userService.getCurrentUserIdByUsername();
@@ -107,10 +103,8 @@ public class CalendarEventController {
         String startDateString = (String) payload.get("start");
         String endDateString = (String) payload.get("end");
 
-        System.out.println("Start: " + startDateString + " End: " + endDateString);
 
         List<Integer> tags = (List<Integer>) payload.get("tags");
-        System.out.println("Tags:"+tags);
         List<Tag> tagforNote = new ArrayList<>();
         for(Integer t : tags) {
             Tag tag = new Tag();

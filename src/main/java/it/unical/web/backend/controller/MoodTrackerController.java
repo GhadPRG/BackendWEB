@@ -31,17 +31,12 @@ public class MoodTrackerController {
         int userId = userService.getCurrentUserIdByUsername();
         List<MoodTracker> moods = moodTrackerService.getAllMoodsByUser(userId);
 
-        System.out.println("Current Moods Found");
-        System.out.println(moods);
         return new ResponseEntity<>(moods, HttpStatus.OK);
     }
 
     @PostMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> addMood(@RequestBody Map<String, Object> payload) {
-        System.out.print("Trying to Add This Mood");
-        System.out.println(payload);
-
         int userId = userService.getCurrentUserIdByUsername();
         int moodLevel = (int) payload.get("moodLevel");
         String dateString = (String) payload.get("moodDate");

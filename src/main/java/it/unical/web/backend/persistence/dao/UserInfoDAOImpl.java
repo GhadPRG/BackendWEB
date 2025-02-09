@@ -116,7 +116,6 @@ public class UserInfoDAOImpl implements UserInfoDAO {
             ResultSet rs = statement.executeQuery();
             return !rs.next();
         }catch (SQLException e){
-            System.out.println("Eccezione in isEmailUnique(UserDAO)");
             throw new RuntimeException(e);
         }
     }
